@@ -40,6 +40,17 @@ header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-be
 .eyebrow{margin:0;font:700 11px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 h1{margin:6px 0 0;font:700 clamp(40px,7vw,72px)/.9 var(--body);letter-spacing:-.035em}
 .lede{margin:0;max-width:60ch;font-size:14px}
+.readme{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px;border-bottom:1px solid var(--line);padding-bottom:14px;font-size:13px;line-height:1.4;color:var(--muted)}
+.readme p{margin:0}
+.readme .lineage{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 8px}
+.readme .lineage .eyebrow{margin-right:6px}
+.readme .lineage .arrow{color:var(--line)}
+.readme .lineage strong{color:var(--ink);font-weight:600}
+.readme a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:2px}
+.readme a:hover{border-bottom-color:var(--ink)}
+.readme .made{display:inline-flex;align-items:center;gap:8px;font:600 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;background:var(--accent);color:var(--accent-ink);padding:8px 10px}
+.readme .made a{color:inherit;border-bottom-color:currentColor;padding-bottom:1px}
+.readme .made a:hover{border-bottom-color:transparent}
 nav.jump{display:flex;flex-wrap:wrap;gap:6px 18px;font:700 11px/1 var(--body);letter-spacing:.12em;text-transform:uppercase}
 nav.jump a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:3px}
 nav.jump a:hover{border-color:var(--ink)}
@@ -242,6 +253,20 @@ footer{margin-top:24px;border-top:1px solid var(--line);padding-top:12px;font-si
     </div>
     <p class="lede">Write a factory process in Loom, a small YAML language for humanoid work. The compiler turns it into a timeline of walks, picks, machine cycles and handoffs. The figures then play that timeline with no keyframes. Every pose is solved live from springs, two-bone IK and footsteps planned ahead on the timeline, 120 times a second.</p>
   </header>
+
+  <aside class="readme" aria-label="Readme">
+    <p class="lineage">
+      <span class="eyebrow">Readme · Lineage</span>
+      <a href="https://tinker-doom.moldandyeast.com" target="_blank" rel="noopener">Tinker Doom</a>
+      <span class="arrow">&rarr;</span>
+      <a href="https://demo-possie-procedural-bot.moldandyeast.com" target="_blank" rel="noopener">Tinker Studio</a>
+      <span class="arrow">&rarr;</span>
+      <strong>Loom Studio</strong>
+      <span class="arrow">·</span>
+      <a href="https://github.com/moldandyeast/loom-studio" target="_blank" rel="noopener">Source on GitHub</a>
+    </p>
+    <p class="made">Made by RM <span aria-hidden="true">&middot;</span> <a href="https://content.moldandyeast.com" target="_blank" rel="noopener">more at content.moldandyeast.com</a></p>
+  </aside>
 
   <div class="modebar">
     <nav class="jump" aria-label="Sections"><a href="#studio">Studio</a><a href="#notes">Field notes: the math</a><a href="#reference">Language reference</a></nav>
