@@ -1,0 +1,2921 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Loom Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+:root{
+  --bg:#FFFFFF; --panel:#FFFFFF; --ink:#111111; --muted:#6E6E6E; --line:#D6D6D6; --rule:#111111;
+  --stage:#FFFFFF; --stage-grid:#F0F0F0; --stage-major:#E0E0E0; --floor:#F8F8F8; --floor-grid:#DCDCDC; --floor-line:#111111; --shadow:#9A9A9A;
+  --side-a:#EDEDED; --side-b:#DADADA; --void:#E6E6E6;
+  --accent:#111111; --accent-ink:#FFFFFF; --accent-soft:#F0F0F0; --bone:#111111; --rec:#D23A2A; --warn:#A8620A; --far:#E4E4E4;
+  --code-hl:#F3F3F3; --sel:#DCE3F0;
+  --body:Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C0C0C; --panel:#0C0C0C; --ink:#F2F2F2; --muted:#9A9A9A; --line:#333333; --rule:#F2F2F2;
+    --stage:#101010; --stage-grid:#181818; --stage-major:#242424; --floor:#141414; --floor-grid:#2B2B2B; --floor-line:#E8E8E8; --shadow:#6A6A6A;
+    --side-a:#1C1C1C; --side-b:#262626; --void:#1A1A1A;
+    --accent:#F2F2F2; --accent-ink:#0C0C0C; --accent-soft:#222222; --bone:#F2F2F2; --rec:#FF5A48; --warn:#F0A83C; --far:#2A2A2A;
+    --code-hl:#1C1C1C; --sel:#26314A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C0C0C; --panel:#0C0C0C; --ink:#F2F2F2; --muted:#9A9A9A; --line:#333333; --rule:#F2F2F2;
+  --stage:#101010; --stage-grid:#181818; --stage-major:#242424; --floor:#141414; --floor-grid:#2B2B2B; --floor-line:#E8E8E8; --shadow:#6A6A6A;
+  --side-a:#1C1C1C; --side-b:#262626; --void:#1A1A1A;
+  --accent:#F2F2F2; --accent-ink:#0C0C0C; --accent-soft:#222222; --bone:#F2F2F2; --rec:#FF5A48; --warn:#F0A83C; --far:#2A2A2A;
+  --code-hl:#1C1C1C; --sel:#26314A;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:20px 48px}
+.wrap{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 32px;border-bottom:2px solid var(--rule);padding-bottom:16px}
+.eyebrow{margin:0;font:700 11px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1{margin:6px 0 0;font:700 clamp(40px,7vw,72px)/.9 var(--body);letter-spacing:-.035em}
+.lede{margin:0;max-width:60ch;font-size:14px}
+nav.jump{display:flex;flex-wrap:wrap;gap:6px 18px;font:700 11px/1 var(--body);letter-spacing:.12em;text-transform:uppercase}
+nav.jump a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:3px}
+nav.jump a:hover{border-color:var(--ink)}
+.modebar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px}
+
+.btn{font:700 12px/1 var(--body);color:var(--ink);background:transparent;border:1px solid var(--rule);border-radius:0;padding:8px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover:not(:disabled){background:var(--accent-soft)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.btn.primary{background:var(--ink);color:var(--bg);min-width:84px;justify-content:center}
+.btn.sq{padding:8px 9px;min-width:30px;justify-content:center}
+.btn svg{width:12px;height:12px;fill:currentColor}
+select{font:inherit;font-size:12px;border:1px solid var(--rule);border-radius:0;background:var(--panel);color:var(--ink);padding:6px}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,.clip:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:inline-flex;border:1px solid var(--rule)}
+.seg button{font:700 12px/1 var(--body);color:var(--ink);background:transparent;border:0;border-radius:0;padding:8px 11px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--rule)}
+.seg button[aria-pressed="true"],.seg button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.chip{font:700 11px/1 var(--body);letter-spacing:.1em;text-transform:uppercase;padding:6px 8px;background:var(--accent);color:var(--accent-ink)}
+.chip.ghost{background:var(--panel);color:var(--ink);border:1px solid var(--rule)}
+.chip.warn{background:var(--warn);color:#fff}
+.hint{font:400 12px/1.35 var(--body);color:var(--muted)}
+
+/* ---------- studio layout ---------- */
+.studio{display:grid;grid-template-columns:minmax(0,440px) minmax(0,1fr);grid-template-areas:"code stage" "code metrics" "tl tl";gap:16px;align-items:stretch}
+@media (max-width:1060px){.studio{grid-template-columns:minmax(0,1fr);grid-template-areas:"stage" "metrics" "code" "tl"}}
+
+/* editor */
+.editor{grid-area:code;display:flex;flex-direction:column;border:1px solid var(--rule);background:var(--panel);min-width:0;min-height:520px}
+.ed-bar{display:flex;align-items:stretch;justify-content:space-between;border-bottom:1px solid var(--rule);gap:8px;flex-wrap:wrap}
+.ed-tabs{display:flex}
+.ed-tabs button{font:500 12px/1 var(--mono);color:var(--muted);background:transparent;border:0;border-right:1px solid var(--line);padding:11px 14px;cursor:pointer}
+.ed-tabs button[aria-selected="true"]{color:var(--ink);background:var(--panel);box-shadow:inset 0 -2px 0 var(--ink)}
+.ed-tools{display:flex;gap:6px;align-items:center;padding:5px 6px}
+.ed-body{position:relative;flex:1 1 auto;min-height:0;display:grid;grid-template-columns:44px minmax(0,1fr);overflow:hidden}
+.gutter{position:relative;overflow:hidden;border-right:1px solid var(--line);background:var(--panel)}
+.gutter-in{position:absolute;left:0;right:0;top:0}
+.gl{height:20px;font:400 11px/20px var(--mono);color:var(--muted);text-align:right;padding-right:7px;position:relative;font-variant-numeric:tabular-nums}
+.gl.err{color:var(--warn);font-weight:600}
+.gl.err::before{content:"";position:absolute;left:4px;top:7px;width:6px;height:6px;background:var(--warn)}
+.gl .bad{position:absolute;left:2px;top:3px;display:flex;gap:1px}
+.gl .bad i{font:700 8px/12px var(--body);font-style:normal;width:12px;height:12px;text-align:center;background:var(--ink);color:var(--bg)}
+.code{position:relative;overflow:hidden;min-width:0}
+.code pre,.code textarea{margin:0;border:0;padding:0 12px 40px 10px;font:400 12.5px/20px var(--mono);letter-spacing:0;tab-size:2;white-space:pre;word-wrap:normal;overflow-wrap:normal}
+.code pre{position:absolute;inset:0;pointer-events:none;color:var(--ink);overflow:hidden}
+.code pre .ln{display:block;min-height:20px}
+.code pre .ln.exec{background:var(--code-hl)}
+.code pre .ln.hot{background:var(--sel)}
+.code pre .ln.errl{background:color-mix(in srgb,var(--warn) 12%,transparent)}
+.code textarea{position:absolute;inset:0;width:100%;height:100%;resize:none;background:transparent;color:transparent;caret-color:var(--ink);outline:none;overflow:auto}
+.code textarea::selection{background:color-mix(in srgb,var(--ink) 18%,transparent);color:transparent}
+.code textarea:focus-visible{outline:none}
+.t-c{color:var(--muted);font-style:italic}
+.t-k{font-weight:600}
+.t-v{font-weight:600;box-shadow:inset 0 -1.5px 0 currentColor}
+.t-n{color:var(--muted)}
+.t-u{color:var(--muted)}
+.t-s{color:var(--ink)}
+.t-r{text-decoration:underline dotted;text-underline-offset:3px}
+.t-p{color:var(--muted)}
+.t-g{font-weight:600;letter-spacing:.02em}
+.ed-js{position:absolute;inset:0;overflow:auto;padding:0 12px 40px 10px;font:400 12.5px/20px var(--mono);white-space:pre;color:var(--ink)}
+.ed-foot{border-top:1px solid var(--rule);padding:8px 10px;display:flex;flex-direction:column;gap:4px;max-height:140px;overflow:auto}
+.diag{font:400 12px/1.4 var(--mono);display:flex;gap:8px;align-items:baseline;cursor:default}
+.diag b{font-weight:600;white-space:nowrap}
+.diag.err{color:var(--warn);cursor:pointer}
+.diag.warnd{color:var(--muted);cursor:pointer}
+.diag.ok{color:var(--ink)}
+
+/* stage */
+.stage{grid-area:stage;position:relative;overflow:hidden;background:var(--stage);border:1px solid var(--rule);min-width:0}
+.stage canvas{display:block;width:100%;aspect-ratio:16/10;max-width:100%;cursor:grab;touch-action:none}
+.stage canvas.dragging{cursor:grabbing}
+@media (max-width:700px){.stage canvas{aspect-ratio:4/5}.hud{flex-direction:column;gap:6px}.hud .r{justify-content:flex-start}}
+.hud{position:absolute;left:12px;top:10px;right:12px;display:flex;gap:8px;align-items:flex-start;justify-content:space-between;pointer-events:none}
+.hud .l{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.hud .r{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;pointer-events:auto}
+.hud .btn{background:color-mix(in srgb,var(--panel) 88%,transparent);padding:6px 8px;font-size:11px}
+.hud .btn[aria-pressed="true"]{background:var(--ink)}
+
+/* metrics */
+.metrics{grid-area:metrics;border:1px solid var(--rule);background:var(--panel);display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) minmax(0,2.2fr);min-width:0}
+@media (max-width:760px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.metrics .crew{grid-column:1/-1}}
+.stat{padding:10px 12px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:4px;min-width:0}
+.stat span{font:700 10px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.stat b{font:500 20px/1.1 var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat small{font:400 11px/1.3 var(--body);color:var(--muted)}
+.crew{padding:6px 10px;overflow:auto}
+.crew table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+.crew col.c1{width:17%}.crew col.c3{width:27%}.crew col.c4{width:16%}
+.crew th{font:700 10px/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:5px 6px 5px 0;border-bottom:1px solid var(--line)}
+.crew td{padding:4px 6px 4px 0;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap}
+.crew td.num{font-family:var(--mono);font-size:11.5px;text-align:right}
+.crew th.num{text-align:right}
+.crew tr{cursor:pointer}
+.crew tr.sel td{background:var(--accent-soft)}
+.crew td.doing{overflow:hidden;text-overflow:ellipsis}
+.crew td b{display:block;overflow:hidden;text-overflow:ellipsis}
+.meter{display:inline-block;width:46px;height:6px;border:1px solid var(--ink);vertical-align:middle;margin-left:6px;position:relative}
+.meter i{position:absolute;left:0;top:0;bottom:0;background:var(--ink)}
+
+/* timeline */
+.tl{grid-area:tl;min-width:0;border:1px solid var(--rule);background:var(--panel)}
+.transport{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px;border-bottom:1px solid var(--rule)}
+.time{font:400 13px/1 var(--mono);font-variant-numeric:tabular-nums;margin-inline:6px;white-space:nowrap}
+.time b{font-weight:600}
+.spacer{flex:1 1 0}
+.grp{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
+.tlbody{display:grid;grid-template-columns:96px minmax(0,1fr)}
+.lanes-l{border-right:1px solid var(--line)}
+.lanes-l div{font:700 10px/1.1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;padding-left:8px;border-bottom:1px solid var(--line);overflow:hidden;white-space:nowrap}
+.lanes-l div.crewl{color:var(--ink);cursor:pointer}
+.lanes-l div.crewl.sel{background:var(--ink);color:var(--bg)}
+.tl-scroll{overflow-x:auto;position:relative;overscroll-behavior-x:contain}
+.tl-inner{position:relative;min-width:100%}
+.ruler{height:24px;position:relative;border-bottom:1px solid var(--line);cursor:ew-resize;touch-action:none}
+.tick{position:absolute;bottom:0;width:1px;height:5px;background:var(--muted)}
+.tick.major{height:9px;background:var(--ink)}
+.tick span{position:absolute;left:4px;bottom:7px;font:400 10px/1 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.lane{position:relative;border-bottom:1px solid var(--line)}
+.lane.crewlane{height:46px}
+.lane.stlane{height:22px}
+.lane.siglane{height:26px}
+.clip{position:absolute;top:5px;bottom:5px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);padding:4px 6px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;justify-content:center;gap:3px;user-select:none}
+.clip b{font:700 11px/1 var(--body);white-space:nowrap}
+.clip span{font:400 10px/1 var(--mono);color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.clip.walk{background:repeating-linear-gradient(135deg,var(--accent-soft) 0 3px,var(--panel) 3px 7px)}
+.clip.walk.carry{background:repeating-linear-gradient(135deg,var(--side-b) 0 3px,var(--panel) 3px 6px)}
+.clip.ring{background:repeating-linear-gradient(45deg,var(--accent-soft) 0 3px,transparent 3px 7px),repeating-linear-gradient(135deg,var(--accent-soft) 0 3px,var(--panel) 3px 7px)}
+.clip.work{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.clip.work span{color:inherit;opacity:.75}
+.clip.gesture{border-style:solid;background:var(--panel)}
+.clip.wait{border-style:dashed;border-color:var(--muted);background:transparent}
+.clip.wait.blocked{border-color:var(--warn)}
+.clip.wait.blocked b,.clip.wait.blocked span{color:var(--warn)}
+.clip.tiny b,.clip.tiny span{display:none}
+.clip.hot{outline:2px solid var(--ink);outline-offset:1px;z-index:2}
+.clip.sel{box-shadow:inset 0 -3px 0 var(--warn)}
+.run{position:absolute;top:5px;bottom:5px;background:var(--ink)}
+.run.idle{background:transparent}
+.sig{position:absolute;top:0;height:26px;display:flex;align-items:center;gap:5px;transform:translateX(-6px);pointer-events:none}
+.sig i{width:10px;height:10px;transform:rotate(45deg);border:1.5px solid var(--ink);background:var(--panel);flex:none}
+.sig em{font:500 10px/1 var(--mono);font-style:normal;color:var(--muted);white-space:nowrap}
+.playhead{position:absolute;top:0;bottom:0;width:0;border-left:1.5px solid var(--ink);pointer-events:none;z-index:4}
+.playhead::before{content:"";position:absolute;top:0;left:-6px;border:5px solid transparent;border-top:7px solid var(--ink)}
+.tlnote{margin:0;padding:8px 10px;font-size:12px;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:8px 10px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:22px;height:11px;border:1px solid var(--rule)}
+
+/* notes */
+section.notes,section.ref{display:flex;flex-direction:column;gap:18px;margin-top:28px;border-top:2px solid var(--rule);padding-top:18px}
+.sec-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px 30px}
+.sec-h h2{margin:6px 0 0;font:700 clamp(28px,4vw,40px)/1 var(--body);letter-spacing:-.025em;text-wrap:balance}
+.sec-h p{margin:0;max-width:62ch;font-size:14px}
+.fig-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.fig-grid{grid-template-columns:minmax(0,1fr)}}
+.fig{border:1px solid var(--rule);display:flex;flex-direction:column;min-width:0}
+.fig canvas{display:block;width:100%;aspect-ratio:16/8.5;max-width:100%;border-bottom:1px solid var(--line);touch-action:none}
+.fig .cap{padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px}
+.fig h3{margin:0;font:700 16px/1.25 var(--body)}
+.fig h3 span{display:block;font:700 10px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.fig p{margin:0;font-size:13.5px;max-width:68ch}
+.eq{font:400 12.5px/1.6 var(--mono);background:var(--accent-soft);padding:8px 10px;overflow-x:auto;white-space:pre}
+.ctrls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 14px}
+@media (max-width:520px){.ctrls{grid-template-columns:minmax(0,1fr)}}
+.slider{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center;font-size:12.5px}
+.slider label{font-weight:500}
+.slider output{font:400 11.5px/1 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.slider input{grid-column:1/-1;width:100%;accent-color:var(--accent)}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 20px}
+@media (max-width:860px){.grid3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.grid3{grid-template-columns:minmax(0,1fr)}}
+.note{border-top:1px solid var(--rule);padding-top:10px;display:flex;flex-direction:column;gap:8px}
+.note h3{margin:0;font:700 15px/1.3 var(--body)}
+.note h3 span{font:700 10px/1 var(--body);color:var(--muted);letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:6px}
+.note p{margin:0;font-size:13.5px}
+.note .eq{font-size:11.5px}
+.tbl{overflow-x:auto;border:1px solid var(--rule)}
+.tbl table{border-collapse:collapse;width:100%;min-width:720px;font-size:13px}
+.tbl th{font:700 10px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule);background:var(--accent-soft)}
+.tbl td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl td code,.ref code{font:400 12px/1.4 var(--mono);background:var(--accent-soft);padding:1px 4px}
+.tbl td.m{font:400 12px/1.45 var(--mono);white-space:nowrap}
+.tbl tr:last-child td{border-bottom:0}
+.ref-grid .tbl table{min-width:0}
+.ref-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media (max-width:900px){.ref-grid{grid-template-columns:minmax(0,1fr)}}
+pre.sample{margin:0;border:1px solid var(--rule);padding:12px 14px;font:400 12px/1.6 var(--mono);overflow-x:auto;background:var(--panel)}
+.kbd{font:600 10.5px/1 var(--mono);border:1px solid var(--line);padding:2px 5px}
+footer{margin-top:24px;border-top:1px solid var(--line);padding-top:12px;font-size:12px;color:var(--muted)}
+@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <p class="eyebrow">Procedural humanoid studio · Axonometric · Loom 0.1</p>
+      <h1>Loom</h1>
+    </div>
+    <p class="lede">Write a factory process in Loom, a small YAML language for humanoid work. The compiler turns it into a timeline of walks, picks, machine cycles and handoffs. The figures then play that timeline with no keyframes. Every pose is solved live from springs, two-bone IK and footsteps planned ahead on the timeline, 120 times a second.</p>
+  </header>
+
+  <div class="modebar">
+    <nav class="jump" aria-label="Sections"><a href="#studio">Studio</a><a href="#notes">Field notes: the math</a><a href="#reference">Language reference</a></nav>
+    <span class="hint" id="modeHint">Edit the program on the left. The timeline recompiles as you type.</span>
+  </div>
+
+  <main class="studio" id="studio">
+    <!-- editor -->
+    <section class="editor" aria-label="Loom source editor">
+      <div class="ed-bar">
+        <div class="ed-tabs" role="tablist">
+          <button role="tab" id="tabSrc" aria-selected="true">cell.loom</button>
+          <button role="tab" id="tabJs" aria-selected="false">compiled.js</button>
+        </div>
+        <div class="ed-tools">
+          <select id="example" aria-label="Load an example">
+            <option value="gear">Example: Gear cell</option>
+            <option value="bottleneck">Example: Two presses, one inspector</option>
+            <option value="escher">Example: Ascending and descending</option>
+          </select>
+          <button class="btn" id="bCopy" title="Copy the current tab to the clipboard">Copy</button>
+        </div>
+      </div>
+      <div class="ed-body">
+        <div class="gutter" aria-hidden="true"><div class="gutter-in" id="gutter"></div></div>
+        <div class="code" id="codeWrap">
+          <pre id="hl" aria-hidden="true"></pre>
+          <textarea id="src" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Loom program"></textarea>
+          <div class="ed-js" id="jsView" hidden tabindex="0" aria-label="Compiled JavaScript"></div>
+        </div>
+      </div>
+      <div class="ed-foot" id="diags" aria-live="polite"></div>
+    </section>
+
+    <!-- stage -->
+    <div class="stage">
+      <canvas id="stage" role="img" aria-label="Axonometric factory cell with abstract humanoid figures performing the compiled program"></canvas>
+      <div class="hud">
+        <div class="l"><span class="chip" id="hudState">Compiling</span><span class="chip ghost" id="hudSel" hidden></span></div>
+        <div class="r">
+          <button class="btn" id="vRotL" title="Rotate the view 90° counter-clockwise (Q)">⟲ Rotate</button>
+          <button class="btn" id="vRotR" title="Rotate the view 90° clockwise (E)">⟳</button>
+          <button class="btn sq" id="vZoomOut" aria-label="Zoom out">−</button>
+          <button class="btn sq" id="vZoomIn" aria-label="Zoom in">+</button>
+          <button class="btn" id="vRig" aria-pressed="true" title="Show IK chains, foot targets and gaze for the selected figure">Rig</button>
+          <button class="btn" id="vLabels" aria-pressed="true" title="Show station and crew labels">Labels</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- metrics -->
+    <section class="metrics" aria-label="Cell metrics">
+      <div class="stat"><span>Cycle time</span><b id="mSpan">–</b><small id="mSpanS">until the last figure finishes</small></div>
+      <div class="stat"><span>Output</span><b id="mOut">–</b><small id="mOutS">items delivered to bins</small></div>
+      <div class="stat"><span>Throughput</span><b id="mTput">–</b><small>per minute</small></div>
+      <div class="stat"><span>Bottleneck</span><b id="mNeck">–</b><small id="mNeckS">busiest station</small></div>
+      <div class="crew"><table><colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"></colgroup><thead><tr><th>Crew</th><th>Now</th><th class="num">Busy</th><th class="num">Waited</th></tr></thead><tbody id="crewRows"></tbody></table></div>
+    </section>
+
+    <!-- timeline -->
+    <section class="tl" aria-label="Timeline">
+      <div class="transport">
+        <div class="grp">
+          <button class="btn" id="bStart" title="Back to start (Home)"><svg viewBox="0 0 12 12"><rect x="1" y="1" width="2" height="10"/><path d="M11 1 4 6l7 5z"/></svg>Start</button>
+          <button class="btn primary" id="bPlay" title="Play or pause (Space)"><svg viewBox="0 0 12 12" id="playIcon"><path d="M2 1l9 5-9 5z"/></svg><span id="playLbl">Play</span></button>
+          <button class="btn" id="bLoop" aria-pressed="true">Loop</button>
+          <span class="time"><b id="tNow">0.0</b> / <span id="tTot">0.0</span> s</span>
+          <select id="speed" aria-label="Playback speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select>
+          <button class="btn sq" id="bZoomOut" aria-label="Zoom timeline out">−</button>
+          <button class="btn sq" id="bZoomIn" aria-label="Zoom timeline in">+</button>
+        </div>
+        <span class="spacer"></span>
+        <span class="hint" id="tlHint">Click a clip to jump to it and to its line in the program.</span>
+      </div>
+      <div class="tlbody">
+        <div class="lanes-l" id="lanesL"></div>
+        <div class="tl-scroll" id="tlScroll">
+          <div class="tl-inner" id="tlInner">
+            <div class="ruler" id="ruler"></div>
+            <div id="lanes"></div>
+            <div class="playhead" id="playhead"></div>
+          </div>
+        </div>
+      </div>
+      <div class="legend">
+        <span><i style="background:repeating-linear-gradient(135deg,var(--accent-soft) 0 3px,var(--panel) 3px 7px)"></i>Walk</span>
+        <span><i style="background:repeating-linear-gradient(135deg,var(--side-b) 0 3px,var(--panel) 3px 6px)"></i>Carry</span>
+        <span><i style="background:var(--ink)"></i>Work: pick, place, operate, inspect</span>
+        <span><i></i>Gesture</span>
+        <span><i style="border-style:dashed;border-color:var(--warn)"></i>Blocked</span>
+        <span><i style="border-style:dashed;border-color:var(--muted)"></i>Planned wait</span>
+        <span><i style="border:0;height:6px;background:var(--ink)"></i>Station running</span>
+        <span>◇ Signal</span>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= FIELD NOTES ================= -->
+  <section class="notes" id="notes">
+    <div class="sec-h">
+      <div><p class="eyebrow">Field notes</p><h2>The math under each pose</h2></div>
+      <p>Each figure is a handful of small solvers stacked on top of the timeline. The four figures below are live: drag and slide to see the same code that drives the studio.</p>
+    </div>
+
+    <div class="fig-grid">
+      <article class="fig">
+        <canvas id="figSpring" aria-label="Plot of a second-order spring following a stepped target"></canvas>
+        <div class="cap">
+          <h3><span>Fig. A · Second-order dynamics</span>Every joint target goes through a spring</h3>
+          <p>Targets from the timeline jump: a hand is at rest, then it should be at the shelf. A second-order system turns that jump into motion. Three numbers describe how it feels: <b>f</b> is the natural frequency in hertz, <b>ζ</b> is damping (below 1 it overshoots) and <b>r</b> is the initial response (above 1 it anticipates, below 0 it winds up first). The body uses a calm spring, the gaze a quick one with r above 1 so the head leads the turn.</p>
+          <div class="eq">y + k₁·ẏ + k₂·ÿ = x + k₃·ẋ
+k₁ = ζ / (π f)     k₂ = 1 / (2π f)²     k₃ = r ζ / (2π f)
+stable step:  k₂' = max(k₂, h²/2 + h·k₁/2, h·k₁)</div>
+          <div class="ctrls">
+            <div class="slider"><label for="sF">f · frequency</label><output id="sFo">2.2 Hz</output><input type="range" id="sF" min="0.4" max="6" step="0.1" value="2.2"></div>
+            <div class="slider"><label for="sZ">ζ · damping</label><output id="sZo">0.60</output><input type="range" id="sZ" min="0" max="1.6" step="0.02" value="0.6"></div>
+            <div class="slider"><label for="sR">r · response</label><output id="sRo">0.5</output><input type="range" id="sR" min="-2" max="3" step="0.1" value="0.5"></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="fig">
+        <canvas id="figIK" aria-label="Two-bone arm reaching toward a draggable target"></canvas>
+        <div class="cap">
+          <h3><span>Fig. B · Two-bone IK, law of cosines</span>Arms and legs solve in closed form</h3>
+          <p>An arm or leg is two bones of fixed length. The triangle they make with the target has three known sides, so the elbow angle falls out of the law of cosines with no iteration. A pole point picks which way the joint bends: in front of the knee, behind and outside the elbow. Drag the target. When it is out of reach the chain straightens and points at it.</p>
+          <div class="eq">d = |T − S|,   cos α = (a² + d² − b²) / (2 a d)
+elbow = S + a·(cos α · û + sin α · ŵ)
+û = (T − S)/d,   ŵ = normalize(pole − S − ((pole − S)·û) û)</div>
+        </div>
+      </article>
+
+      <article class="fig">
+        <canvas id="figGait" aria-label="Side view of a walking figure with its gait phase diagram"></canvas>
+        <div class="cap">
+          <h3><span>Fig. C · Gait from the timeline</span>Feet land where the hips will be</h3>
+          <p>Steps alternate at the rig's cadence. Each swing lasts part of the step interval, so both feet are down for a moment between swings. When a foot lifts off, the planner asks the timeline where the pelvis will be at the middle of that foot's next stance. It lands there, which is the Raibert placement rule, read from the future instead of predicted. Hip height comes from the stance leg itself, so the body dips when both feet are down.</p>
+          <div class="eq">landing = p(t + T_swing + T_stance/2) + side · hip_width
+hip_y  = min(stand, ankle_y + √(L² − d²))       (inverted pendulum)
+T_step = 1/cadence,  T_swing = 0.8·T_step,  stride = speed / cadence</div>
+          <div class="ctrls">
+            <div class="slider"><label for="gC">Cadence</label><output id="gCo">1.9 steps/s</output><input type="range" id="gC" min="1.2" max="3" step="0.05" value="1.9"></div>
+            <div class="slider"><label for="gS">Stride</label><output id="gSo">0.72 m</output><input type="range" id="gS" min="0.3" max="1.1" step="0.01" value="0.72"></div>
+            <div class="slider"><label for="gD">Swing share</label><output id="gDo">80%</output><input type="range" id="gD" min="0.5" max="0.98" step="0.01" value="0.8"></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="fig">
+        <canvas id="figIso" aria-label="An axonometric cube sliding along the invisible direction, with a side elevation"></canvas>
+        <div class="cap">
+          <h3><span>Fig. D · The null vector</span>How the impossible stair closes</h3>
+          <p>Axonometric projection flattens three dimensions into two, so one direction disappears. For the 30° view that direction is (1, 1, 1). A cube moved along it stays put on screen while the side elevation shows it climbing. The Penrose ring in the studio is a real helix that rises by k levels and shifts k bays in x and z. That shift is k·(1, 1, 1), so the end draws exactly on top of the start. Rotate the studio view and the seam opens.</p>
+          <div class="eq">P = ⎡ cos30°    0   −cos30° ⎤      P · (1, 1, 1)ᵀ = 0
+    ⎣  ½      −1     ½    ⎦
+ring sides: n−1, n−1, n−1−k, n−1−k   →   end − start = k·(1, 1, 1)</div>
+        </div>
+      </article>
+    </div>
+
+    <div class="grid3">
+      <div class="note"><h3><span>Arc length</span>Paths walk at a steady speed</h3><p>A* on the bay grid gives tile centres. Corners are rounded by Chaikin cutting, then the path is indexed by distance so speed never depends on how many points a segment has. A trapezoid profile ramps speed in and out over 0.35 s.</p><div class="eq">T = L / v + t_ramp
+s(u) = v̂u²/2a            u &lt; a
+     = v̂(u − a/2)         a ≤ u ≤ 1−a</div></div>
+      <div class="note"><h3><span>Reach budget</span>Lift with the legs</h3><p>For each pick or place the compiler searches hip hinge and knee crouch together, scoring how far the shoulder ends from a comfortable reach. Crouching costs more than hinging, but a deep hinge costs more than both, so low shelves get a squat and benches get a bow.</p><div class="eq">cost = 10·(|S(θ,c) − T| − 0.8·arm)²
+     + 0.35·θ + 0.9·c + 2·max(0, θ − 0.7)²</div></div>
+      <div class="note"><h3><span>Gaze hierarchy</span>Eyes lead, spine follows</h3><p>The head chases its look target through a fast, lightly damped spring with r above 1. The torso yaw follows the path tangent through a slower one. The lag between them reads as intent: the figure looks at the press before it turns to walk there.</p><div class="eq">head: f 3.5 Hz, ζ 0.4, r 1.5
+body: f 2.2 Hz, ζ 0.6, r 0.5
+hands: f 3.6 Hz, ζ 0.75, r 0</div></div>
+      <div class="note"><h3><span>Counter-rotation</span>Arms swing against legs</h3><p>The pelvis yaws toward the leading leg and the shoulders turn the other way. Each hand swings opposite the same-side foot, scaled by that foot's forward offset from the pelvis. There is no arm-swing curve anywhere; it comes out of where the feet are.</p><div class="eq">pelvis_yaw = 0.18 · (f_R − f_L) / stride
+hand_fwd   = −0.3 · f_side</div></div>
+      <div class="note"><h3><span>Discrete events</span>The timeline is a simulation</h3><p>Loom is compiled by running it. Each figure has a program counter. A step either runs, taking time, or blocks on a station lock, an empty shelf, a full bench or a signal. Every state change wakes the blocked figures in first-come order. Blocked time becomes the dashed clips on the timeline.</p><div class="eq">pick   blocks until item ∧ ¬locked
+place  blocks until count + incoming &lt; capacity
+wait   consumes one signal token</div></div>
+      <div class="note"><h3><span>Deterministic replay</span>Scrub anywhere</h3><p>Machine cycle jitter comes from a seeded generator, so the same source always compiles to the same timeline. The rig steps at a fixed 120 Hz and snapshots its state every second. Scrubbing restores the nearest snapshot and simulates forward, so a pose at 42.3 s is the same whether you played or jumped there.</p><div class="eq">x ← x + 0x6D2B79F5 (mulberry32)
+h = 1/120 s, snapshot every 1.0 s</div></div>
+    </div>
+
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Problem</th><th>Used in Loom</th><th>Math</th><th>Alternatives worth knowing</th><th>Why this choice</th></tr></thead>
+        <tbody>
+          <tr><td>Limb IK</td><td>Analytic two-bone with pole</td><td class="m">law of cosines</td><td>FABRIK (Tinker's arms), CCD, Jacobian transpose / damped least squares</td><td>Exact, branch-free, and knees never flip. FABRIK is better for longer chains like spines and tails.</td></tr>
+          <tr><td>Smoothing</td><td>Second-order dynamics (f, ζ, r)</td><td class="m">y + k₁ẏ + k₂ÿ = x + k₃ẋ</td><td>Exponential lerp, critically damped spring, PD controllers</td><td>Three designer-readable numbers cover lag, bounce and anticipation.</td></tr>
+          <tr><td>Stepping</td><td>Phase-locked steps with timeline look-ahead</td><td class="m">Raibert placement</td><td>Threshold stepping (Tinker), motion matching, physics-based controllers</td><td>The timeline knows the future, so feet land exactly on corners and stairs.</td></tr>
+          <tr><td>Body height</td><td>Stance-leg constraint</td><td class="m">√(L² − d²)</td><td>Authored bob curves, spring-mass (SLIP) models</td><td>The walking dip falls out of the leg geometry and scales with stride.</td></tr>
+          <tr><td>Secondary motion</td><td>Springs on hands, gaze, crouch</td><td class="m">semi-implicit Euler</td><td>Verlet + distance constraints (Tinker's antenna), position-based dynamics</td><td>Humanoids need little jiggle; springs give weight shifts and follow-through.</td></tr>
+          <tr><td>Scheduling</td><td>Discrete-event simulation</td><td class="m">priority queue + wakeups</td><td>Petri nets, behaviour trees, PDDL planners</td><td>Readable in YAML, deterministic, and reports waits and bottlenecks directly.</td></tr>
+          <tr><td>Projection</td><td>30° axonometric, painter's sort</td><td class="m">P·(1,1,1) = 0</td><td>Perspective (Tinker), orthographic plan</td><td>Architectural convention; measurable; allows Escher geometry.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= REFERENCE ================= -->
+  <section class="ref" id="reference">
+    <div class="sec-h">
+      <div><p class="eyebrow">Language reference</p><h2>Loom 0.1</h2></div>
+      <p>A Loom file is YAML with units and bay references. It has two surfaces: the YAML you write and the JavaScript builder it compiles to (see the compiled.js tab). Both describe the same cell and produce the same timeline.</p>
+    </div>
+
+    <div class="ref-grid">
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Top-level key</th><th>What it holds</th></tr></thead>
+          <tbody>
+            <tr><td><code>loom</code> <code>cell</code> <code>seed</code> <code>shift</code></td><td>Version, cell name, random seed for jitter, and the simulation horizon (default 600 s). <code>repeat: forever</code> runs until the horizon.</td></tr>
+            <tr><td><code>world</code></td><td><code>grid: [cols, rows]</code> of 1 m bays, <code>platforms</code> (<code>at</code>, <code>size</code>, <code>level</code>), <code>stairs</code> (<code>at</code>, <code>dir</code>, <code>run</code>), and one <code>penrose</code> ring (<code>at</code>, <code>size</code>, <code>rise</code>).</td></tr>
+            <tr><td><code>items</code></td><td>Item name → shape: <code>cube</code>, <code>disc</code>, <code>crate</code>, <code>sphere</code>, <code>rod</code>.</td></tr>
+            <tr><td><code>stations</code></td><td>Name → <code>at</code>, <code>kind</code> (<code>rack</code> <code>machine</code> <code>bench</code> <code>bin</code>), <code>face</code> (side the figure stands on), <code>stock</code>, <code>capacity</code>, and for machines <code>makes: a -&gt; b</code> and <code>cycle</code>.</td></tr>
+            <tr><td><code>rigs</code></td><td>Name → <code>height</code>, <code>gait</code> (<code>cadence</code>, <code>stride</code>, <code>lift</code>), and springs <code>body</code>, <code>gaze</code>, <code>hands</code> as <code>{ f, zeta, r }</code>. A rig called <code>figure</code> exists by default.</td></tr>
+            <tr><td><code>crew</code></td><td>Name → <code>rig</code>, <code>at</code>, and any rig field to override for that figure.</td></tr>
+            <tr><td><code>program</code></td><td>Crew name → list of steps. Every crew member runs its list in parallel from t = 0.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Value</th><th>Forms</th></tr></thead>
+          <tbody>
+            <tr><td>Bay</td><td><code>J2</code> is column J, row 2. Columns run A→ along x (east), rows 1→ along z (south). <code>[9, 1]</code> is the same bay as zero-based numbers.</td></tr>
+            <tr><td>Time</td><td><code>4s</code>, <code>400ms</code>, <code>1.5min</code>, and jitter <code>4s ± 0.6s</code> (or <code>+-</code>), drawn uniformly from the seed.</td></tr>
+            <tr><td>Length</td><td><code>1.75m</code>, <code>72cm</code>, or a bare number in metres.</td></tr>
+            <tr><td>Frequency</td><td><code>1.9hz</code> or a bare number.</td></tr>
+            <tr><td>Direction</td><td><code>north</code> (−z), <code>south</code> (+z), <code>east</code> (+x), <code>west</code> (−x).</td></tr>
+            <tr><td>Signal</td><td>Any dotted name, like <code>gear.ready</code>. Each <code>signal</code> adds a token; each <code>wait</code> takes one.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Step</th><th>Form</th><th>Takes</th><th>Blocks until</th><th>The figure</th></tr></thead>
+        <tbody>
+          <tr><td><code>walk</code> / <code>run</code></td><td class="m">walk: press · run: C4</td><td>distance ÷ speed + 0.35 s</td><td>–</td><td>Plans an A* route across bays and stairs; heads along the tangent.</td></tr>
+          <tr><td><code>pick</code></td><td class="m">pick: gear from press</td><td>1.4 s</td><td>an unreserved item is there and the machine is idle</td><td>Walks there first if needed, then solves a hinge and crouch to reach.</td></tr>
+          <tr><td><code>place</code></td><td class="m">place: qa</td><td>1.2 s</td><td>the station has room</td><td>Carries with both hands, lowers the item to the station.</td></tr>
+          <tr><td><code>operate</code></td><td class="m">operate: press · for: 3s</td><td>the machine's cycle</td><td>the machine is free and holds its input</td><td>Works the panel; a machine with <code>makes</code> converts its item at the end.</td></tr>
+          <tr><td><code>inspect</code></td><td class="m">inspect: 2s</td><td>as given</td><td>–</td><td>Raises the held item to eye level and turns it.</td></tr>
+          <tr><td><code>wait</code></td><td class="m">wait: gear.ready · wait: 2s</td><td>as given</td><td>a token for that signal</td><td>Crosses its arms, shifts weight, watches.</td></tr>
+          <tr><td><code>signal</code></td><td class="m">signal: gear.ready</td><td>0.5 s</td><td>–</td><td>Taps the air; a ring pulses at its head.</td></tr>
+          <tr><td><code>ascend</code> / <code>descend</code></td><td class="m">ascend: penrose · laps: 2</td><td>laps × ring length ÷ speed</td><td>–</td><td>Walks the impossible stair forever up (or down).</td></tr>
+          <tr><td><code>repeat</code></td><td class="m">repeat: 3 · do: [ … ]</td><td>–</td><td>–</td><td><code>forever</code> repeats until the shift horizon.</td></tr>
+          <tr><td>Gestures</td><td class="m">wave · nod · stretch · point: press · look: qa · idle: 2s</td><td>0.8–3 s</td><td>–</td><td>Short readable signals between tasks.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="ref-grid">
+      <div class="note"><h3><span>Why YAML</span>Readable on a shop floor</h3><p>A process engineer should be able to read a cell without learning a programming language. YAML gives indentation for nesting, lists for sequences and maps for options. Loom adds units, bay references and verbs. The parser keeps a line number for every value, so errors, timeline clips and the running-line markers in the editor all point back to your source.</p></div>
+      <div class="note"><h3><span>Why a JS surface</span>Generate cells in code</h3><p>Large factories are generated, not typed. The compiled.js tab shows the same program as a chainable builder in plain units (seconds, metres, hertz). Use it to stamp out ten cells from one template, sweep crew sizes, or feed an optimiser. The YAML is the file you share; the builder is the API.</p></div>
+    </div>
+  </section>
+
+  <footer>Loom Studio · a sibling of Tinker. Keys: <span class="kbd">Space</span> play, <span class="kbd">Home</span> start, <span class="kbd">Q</span>/<span class="kbd">E</span> rotate view (outside the editor), <span class="kbd">Tab</span> indents in the editor. Your edits are kept in this browser.</footer>
+</div>
+
+<script>
+(() => {
+"use strict";
+// ================= math =================
+const lerp = (a, b, t) => a + (b - a) * t;
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const sstep = t => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+const wrapA = a => { while (a > Math.PI) a -= 2 * Math.PI; while (a < -Math.PI) a += 2 * Math.PI; return a; };
+const V = (x, y, z) => ({x, y, z});
+const add = (a, b) => V(a.x + b.x, a.y + b.y, a.z + b.z);
+const sub = (a, b) => V(a.x - b.x, a.y - b.y, a.z - b.z);
+const mul = (a, k) => V(a.x * k, a.y * k, a.z * k);
+const dot = (a, b) => a.x * b.x + a.y * b.y + a.z * b.z;
+const len = a => Math.hypot(a.x, a.y, a.z);
+const norm = a => { const l = len(a) || 1e-9; return V(a.x / l, a.y / l, a.z / l); };
+const cross = (a, b) => V(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+const vlerp = (a, b, t) => V(lerp(a.x, b.x, t), lerp(a.y, b.y, t), lerp(a.z, b.z, t));
+const UP = V(0, 1, 0);
+function mulberry(seed){ let s = seed >>> 0; return () => { s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+// Second-order dynamics (t3ssel8r formulation). State is a plain object so snapshots clone it.
+function sodK(p){ const w = 2 * Math.PI * p.f; return {k1: p.z / (Math.PI * p.f), k2: 1 / (w * w), k3: p.r * p.z / w}; }
+function sod1(s, x, h, K){
+  if (s.xp === undefined){ s.y = x; s.yd = 0; s.xp = x; }
+  const xd = (x - s.xp) / h; s.xp = x;
+  const k2 = Math.max(K.k2, h * h / 2 + h * K.k1 / 2, h * K.k1);
+  s.y += h * s.yd;
+  s.yd += h * (x + K.k3 * xd - s.y - K.k1 * s.yd) / k2;
+  return s.y;
+}
+function sodA(s, x, h, K){ // angle: unwrap target near previous target
+  if (s.xp !== undefined) x = s.xp + wrapA(x - s.xp);
+  return sod1(s, x, h, K);
+}
+function sod3(s, x, h, K){
+  if (!s.y){ s.y = {...x}; s.yd = V(0, 0, 0); s.xp = {...x}; }
+  const k2 = Math.max(K.k2, h * h / 2 + h * K.k1 / 2, h * K.k1);
+  for (const a of ['x', 'y', 'z']){
+    const xd = (x[a] - s.xp[a]) / h; s.xp[a] = x[a];
+    s.y[a] += h * s.yd[a];
+    s.yd[a] += h * (x[a] + K.k3 * xd - s.y[a] - K.k1 * s.yd[a]) / k2;
+  }
+  return s.y;
+}
+// Analytic two-bone IK: returns {mid, end}
+function ik2(A, T, a, b, pole){
+  const d = sub(T, A); const dl0 = len(d) || 1e-6; const u = mul(d, 1 / dl0);
+  const dl = clamp(dl0, Math.abs(a - b) + 1e-4, a + b - 1e-4);
+  const ca = clamp((a * a + dl * dl - b * b) / (2 * a * dl), -1, 1), sa = Math.sqrt(1 - ca * ca);
+  let w = sub(pole, A); w = sub(w, mul(u, dot(w, u)));
+  if (len(w) < 1e-6) w = Math.abs(u.y) < .9 ? cross(u, UP) : cross(u, V(1, 0, 0));
+  w = norm(w);
+  const mid = add(A, add(mul(u, a * ca), mul(w, a * sa)));
+  const end = add(A, mul(u, dl));
+  return {mid, end};
+}
+
+// ================= Loom YAML-subset parser =================
+const LINES = Symbol('lines'), LINE = Symbol('line');
+class LoomError extends Error { constructor(msg, line){ super(msg); this.line = line || 0; } }
+const lineOf = (o, k) => (o && o[LINES] && k != null && o[LINES][k]) || (o && o[LINE]) || 0;
+
+function stripComment(s){
+  let q = null;
+  for (let i = 0; i < s.length; i++){
+    const c = s[i];
+    if (q){ if (c === q) q = null; continue; }
+    if (c === '"' || c === "'"){ q = c; continue; }
+    if (c === '#' && (i === 0 || /\s/.test(s[i - 1]))) return s.slice(0, i);
+  }
+  return s;
+}
+function findColon(t){
+  let q = null, d = 0;
+  for (let i = 0; i < t.length; i++){
+    const c = t[i];
+    if (q){ if (c === q) q = null; continue; }
+    if (c === '"' || c === "'"){ q = c; continue; }
+    if (c === '{' || c === '[') d++;
+    else if (c === '}' || c === ']') d--;
+    else if (c === ':' && d === 0 && (i === t.length - 1 || t[i + 1] === ' ')) return i;
+  }
+  return -1;
+}
+const isDash = t => t === '-' || t.startsWith('- ');
+const unq = s => (s.length > 1 && (s[0] === '"' || s[0] === "'") && s[s.length - 1] === s[0]) ? s.slice(1, -1) : s;
+function scalar(s){
+  s = s.trim();
+  if (s[0] === '"' || s[0] === "'") return unq(s);
+  if (/^-?\d+(\.\d+)?$/.test(s)) return Number(s);
+  if (s === 'true') return true; if (s === 'false') return false;
+  if (s === 'null' || s === '~' || s === '') return null;
+  return s;
+}
+function flow(s, n){
+  let i = 0;
+  const ws = () => { while (i < s.length && s[i] === ' ') i++; };
+  const fail = m => { throw new LoomError(m, n); };
+  function val(){
+    ws();
+    if (s[i] === '{'){
+      i++; const o = {}; o[LINES] = {}; o[LINE] = n;
+      ws(); if (s[i] === '}'){ i++; return o; }
+      for (;;){
+        ws(); let k = '';
+        while (i < s.length && !(s[i] === ':' && (s[i + 1] === ' ' || s[i + 1] === ',' || s[i + 1] === '}' || i + 1 === s.length)) && s[i] !== '}' && s[i] !== ',') k += s[i++];
+        if (s[i] !== ':') fail(`Expected "key: value" inside { } near "${k.trim()}"`);
+        i++; k = unq(k.trim());
+        if (!k) fail('Empty key inside { }');
+        o[k] = val(); o[LINES][k] = n; ws();
+        if (s[i] === ','){ i++; continue; }
+        if (s[i] === '}'){ i++; return o; }
+        fail('Missing "}" to close a { } map');
+      }
+    }
+    if (s[i] === '['){
+      i++; const a = []; a[LINES] = []; a[LINE] = n;
+      ws(); if (s[i] === ']'){ i++; return a; }
+      for (;;){
+        a.push(val()); a[LINES].push(n); ws();
+        if (s[i] === ','){ i++; continue; }
+        if (s[i] === ']'){ i++; return a; }
+        fail('Missing "]" to close a [ ] list');
+      }
+    }
+    if (s[i] === '"' || s[i] === "'"){
+      const q = s[i]; const j = s.indexOf(q, i + 1); if (j < 0) fail('Unclosed quote');
+      const v = s.slice(i + 1, j); i = j + 1; return v;
+    }
+    let t = '', d = 0;
+    while (i < s.length){ const c = s[i]; if (d === 0 && (c === ',' || c === '}' || c === ']')) break; if (c === '(') d++; if (c === ')') d--; t += c; i++; }
+    return scalar(t);
+  }
+  const v = val(); ws();
+  if (i < s.length) fail(`Unexpected "${s.slice(i).trim()}" after the value`);
+  return v;
+}
+function inline(s, n){ s = s.trim(); return (s[0] === '{' || s[0] === '[') ? flow(s, n) : scalar(s); }
+
+function parseLoom(src){
+  const L = [];
+  src.split('\n').forEach((text, i) => {
+    const s = stripComment(text.replace(/\r$/, ''));
+    if (!s.trim()) return;
+    const lead = s.match(/^\s*/)[0];
+    if (lead.includes('\t')) throw new LoomError('Indent with spaces, not tabs', i + 1);
+    L.push({ind: lead.length, t: s.trim(), n: i + 1});
+  });
+  if (!L.length) throw new LoomError('The program is empty', 1);
+  let p = 0;
+  const block = ind => isDash(L[p].t) ? seq(ind) : map(ind);
+  function map(ind){
+    const o = {}; o[LINES] = {}; o[LINE] = L[p].n;
+    while (p < L.length && L[p].ind === ind && !isDash(L[p].t)){
+      const l = L[p]; const c = findColon(l.t);
+      if (c < 0) throw new LoomError(`Expected "key: value", got "${l.t}"`, l.n);
+      const k = unq(l.t.slice(0, c).trim()), rest = l.t.slice(c + 1).trim();
+      if (!k) throw new LoomError('Missing key before ":"', l.n);
+      if (Object.prototype.hasOwnProperty.call(o, k)) throw new LoomError(`"${k}" is set twice here`, l.n);
+      p++;
+      let v = null;
+      if (rest === ''){
+        if (p < L.length && L[p].ind > ind) v = block(L[p].ind);
+        else if (p < L.length && L[p].ind === ind && isDash(L[p].t)) v = seq(ind);
+      } else v = inline(rest, l.n);
+      o[k] = v; o[LINES][k] = l.n;
+    }
+    if (p < L.length && L[p].ind > ind) throw new LoomError('This line is indented more than the lines around it', L[p].n);
+    return o;
+  }
+  function seq(ind){
+    const a = []; a[LINES] = []; a[LINE] = L[p].n;
+    while (p < L.length && L[p].ind === ind && isDash(L[p].t)){
+      const l = L[p]; const m = l.t.match(/^-(\s*)(.*)$/); const rest = m[2]; const cInd = ind + 1 + m[1].length;
+      let item = null;
+      if (rest === ''){ p++; if (p < L.length && L[p].ind > ind) item = block(L[p].ind); }
+      else if (isDash(rest)){ L[p] = {ind: cInd, t: rest, n: l.n}; item = seq(cInd); }
+      else if (findColon(rest) >= 0 && rest[0] !== '{' && rest[0] !== '['){ L[p] = {ind: cInd, t: rest, n: l.n}; item = map(cInd); }
+      else { item = inline(rest, l.n); p++; }
+      a.push(item); a[LINES].push(l.n);
+    }
+    if (p < L.length && L[p].ind > ind) throw new LoomError('This line is indented more than the list item above it', L[p].n);
+    return a;
+  }
+  const root = block(L[0].ind);
+  if (p < L.length) throw new LoomError('Indentation goes back further than the first line', L[p].n);
+  if (Array.isArray(root) || typeof root !== 'object') throw new LoomError('A Loom file is a map of keys like world, stations, crew and program', L[0].n);
+  return root;
+}
+
+// ================= units & references =================
+function lev(a, b){ const m = a.length, n = b.length; const d = Array.from({length: m + 1}, (_, i) => [i]); for (let j = 1; j <= n; j++) d[0][j] = j; for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1)); return d[m][n]; }
+function suggest(w, list){ let best = null, bd = 99; for (const c of list){ const d = lev(String(w).toLowerCase(), c.toLowerCase()); if (d < bd){ bd = d; best = c; } } return best && bd <= Math.max(2, Math.floor(String(w).length / 3)) ? ` Did you mean "${best}"?` : ''; }
+
+function uNum(v, units, what, line, def){
+  if (v == null) return def;
+  if (typeof v === 'number') return v;
+  const m = String(v).trim().match(/^(-?\d*\.?\d+)\s*([a-zA-Z%]*)$/);
+  if (!m) throw new LoomError(`Can't read ${what} "${v}"`, line);
+  const u = m[2].toLowerCase(); if (u === '' ) return +m[1];
+  if (!(u in units)) throw new LoomError(`Unknown unit "${m[2]}" for ${what}. Use ${Object.keys(units).join(', ')}`, line);
+  return +m[1] * units[u];
+}
+const U_T = {s: 1, sec: 1, ms: .001, min: 60, m: 60};
+const U_L = {m: 1, cm: .01, mm: .001};
+const U_F = {hz: 1};
+function uDur(v, what, line, def){
+  if (v == null) return def;
+  if (typeof v === 'number') return {v, j: 0};
+  const parts = String(v).split(/±|\+-|\+\/-/);
+  const T2 = {s: 1, sec: 1, ms: .001, min: 60};
+  const val = uNum(parts[0].trim(), T2, what, line);
+  const j = parts[1] ? uNum(parts[1].trim(), T2, what + ' jitter', line) : 0;
+  if (val < 0) throw new LoomError(`${what} can't be negative`, line);
+  return {v: val, j: Math.abs(j)};
+}
+const DIRS = {north: [0, -1], south: [0, 1], east: [1, 0], west: [-1, 0], n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0]};
+function uDir(v, line){ const d = DIRS[String(v).toLowerCase()]; if (!d) throw new LoomError(`Direction "${v}" should be north, south, east or west.` + suggest(v, ['north', 'south', 'east', 'west']), line); return d; }
+function colName(i){ let s = ''; i++; while (i > 0){ const r = (i - 1) % 26; s = String.fromCharCode(65 + r) + s; i = Math.floor((i - 1) / 26); } return s; }
+function bayName(x, z){ return colName(x) + (z + 1); }
+function uBay(v, line, what){
+  if (Array.isArray(v) && v.length === 2 && v.every(n => typeof n === 'number')) return [Math.round(v[0]), Math.round(v[1])];
+  const m = String(v).trim().match(/^([A-Za-z]{1,2})(\d{1,3})$/);
+  if (!m) throw new LoomError(`${what} should be a bay like "J2" or [x, z], got "${v}"`, line);
+  let x = 0; for (const ch of m[1].toUpperCase()) x = x * 26 + (ch.charCodeAt(0) - 64);
+  return [x - 1, +m[2] - 1];
+}
+
+// ================= example programs =================
+const EXAMPLES = {
+gear: `# Gear cell · morning shift
+# Ada feeds the press on the mezzanine and leaves each gear on the
+# QA bench. Boole checks it and bins it. Cara walks her rounds on
+# the impossible stair. Edit anything: the timeline recompiles.
+loom: 0.1
+cell: Gear cell A
+seed: 7
+
+world:
+  grid: [12, 10]               # bays A–L by 1–10, 1 m each
+  platforms:
+    - { at: H1, size: [5, 4], level: 1 }
+  stairs:
+    - { at: F3, dir: east, run: 2 }    # climbs to the mezzanine
+  penrose: { at: A6, size: 5, rise: 2 }
+
+items:
+  blank: cube
+  gear: disc
+
+stations:
+  dock:  { at: B2, kind: rack, face: south, stock: { blank: 6 } }
+  press: { at: J2, kind: machine, face: south, makes: blank -> gear, cycle: 4s ± 0.6s }
+  qa:    { at: G7, kind: bench, face: north }
+  out:   { at: K8, kind: bin, face: west }
+
+rigs:
+  figure:
+    height: 1.75m
+    gait:  { cadence: 1.9hz, stride: 0.72m, lift: 0.1m }
+    body:  { f: 2.2, zeta: 0.6, r: 0.5 }
+    gaze:  { f: 3.5, zeta: 0.4, r: 1.5 }
+
+crew:
+  ada:   { rig: figure, at: C4 }
+  boole: { rig: figure, at: H8, gait: { cadence: 1.7hz } }
+  cara:  { rig: figure, at: B5, height: 1.62m }
+
+program:
+  ada:
+    - repeat: 3
+      do:
+        - pick: blank from dock
+        - place: press
+        - operate: press
+        - pick: gear from press
+        - place: qa
+        - signal: gear.ready
+  boole:
+    - repeat: 3
+      do:
+        - wait: gear.ready
+        - pick: gear from qa
+        - inspect: 2s
+        - place: out
+  cara:
+    - ascend: penrose
+      laps: 2
+    - walk: E5
+    - wave
+    - look: press
+      for: 3s
+`,
+bottleneck: `# Two presses, one inspector
+# Ada and Boole each run a press on the upper deck and hand every
+# gear to a QA bench that holds one part. Cara inspects for 4 s.
+# The orange dashed clips are time lost waiting for the bench.
+# Try capacity: 2 on qa, or inspect: 2s, and watch cycle time.
+loom: 0.1
+cell: Press line B
+seed: 3
+
+world:
+  grid: [12, 10]
+  platforms:
+    - { at: A1, size: [12, 2], level: 1 }
+  stairs:
+    - { at: C4, dir: north, run: 2 }
+    - { at: J4, dir: north, run: 2 }
+
+items:
+  blank: cube
+  gear: disc
+
+stations:
+  stock:  { at: F1, kind: rack, face: south, stock: { blank: 12 } }
+  pressA: { at: B7, kind: machine, face: east, makes: blank -> gear, cycle: 5s ± 1s }
+  pressB: { at: K7, kind: machine, face: west, makes: blank -> gear, cycle: 5s ± 1s }
+  qa:     { at: F7, kind: bench, face: north, capacity: 1 }
+  out:    { at: F10, kind: bin, face: north }
+
+crew:
+  ada:   { rig: figure, at: D7 }
+  boole: { rig: figure, at: I7 }
+  cara:  { rig: figure, at: F5, gait: { cadence: 1.6hz } }
+
+program:
+  ada:
+    - repeat: 4
+      do:
+        - pick: blank from stock
+        - place: pressA
+        - operate: pressA
+        - pick: gear from pressA
+        - place: qa
+  boole:
+    - repeat: 4
+      do:
+        - pick: blank from stock
+        - place: pressB
+        - operate: pressB
+        - pick: gear from pressB
+        - place: qa
+  cara:
+    - repeat: 8
+      do:
+        - pick: gear from qa
+        - inspect: 4s
+        - place: out
+`,
+escher: `# Ascending and descending
+# After M. C. Escher, 1960. One file of figures climbs the ring
+# for ever, the other descends it for ever. Rotate the view (Q)
+# to see how the ring really closes: it is a helix, and the end
+# sits exactly one step of (1, 1, 1) in front of the start.
+loom: 0.1
+cell: Monastery roof
+shift: 70s
+
+world:
+  grid: [11, 11]
+  platforms:
+    - { at: A1, size: [11, 2], level: 1 }
+  stairs:
+    - { at: K4, dir: north, run: 2 }
+  penrose: { at: D5, size: 6, rise: 3 }
+
+rigs:
+  monk:
+    height: 1.7m
+    gait: { cadence: 1.6hz, stride: 0.6m, lift: 0.12m }
+    body: { f: 1.8, zeta: 0.7, r: 0.3 }
+
+crew:
+  a1: { rig: monk, at: A4 }
+  a2: { rig: monk, at: B4 }
+  a3: { rig: monk, at: C4 }
+  d1: { rig: monk, at: E4 }
+  d2: { rig: monk, at: F4 }
+  d3: { rig: monk, at: G4 }
+  watcher: { rig: figure, at: E1 }
+
+program:
+  a1:
+    - ascend: penrose
+      laps: forever
+      lane: outer
+  a2:
+    - ascend: penrose
+      laps: forever
+      lane: outer
+  a3:
+    - ascend: penrose
+      laps: forever
+      lane: outer
+  d1:
+    - wait: 3s
+    - descend: penrose
+      laps: forever
+      lane: inner
+  d2:
+    - wait: 3s
+    - descend: penrose
+      laps: forever
+      lane: inner
+  d3:
+    - wait: 3s
+    - descend: penrose
+      laps: forever
+      lane: inner
+  watcher:
+    - repeat: forever
+      do:
+        - look: penrose
+          for: 5s
+        - nod
+        - stretch
+        - idle: 2s
+`,
+};
+
+// ================= compiler: model =================
+const KINDS = {
+  rack:    {cap: 12, h: 1.4},
+  machine: {cap: 1,  h: 1.3},
+  bench:   {cap: 2,  h: .85},
+  bin:     {cap: 99, h: .55},
+};
+const SHAPES = ['cube', 'disc', 'crate', 'sphere', 'rod'];
+const VERBS = ['walk', 'run', 'pick', 'place', 'operate', 'inspect', 'wait', 'signal', 'ascend', 'descend', 'repeat', 'wave', 'nod', 'stretch', 'point', 'look', 'idle'];
+const TOP = ['loom', 'cell', 'seed', 'shift', 'world', 'items', 'stations', 'rigs', 'crew', 'program'];
+const RIG0 = {height: 1.75, cadence: 1.9, stride: .72, lift: .1, body: {f: 2.2, z: .6, r: .5}, gaze: {f: 3.5, z: .4, r: 1.5}, hands: {f: 3.6, z: .75, r: 0}};
+const GESTURE_T = {wave: 2.2, nod: 1.1, stretch: 3, point: 1.8};
+const PICK_T = 1.4, PLACE_T = 1.2, SIGNAL_T = .5, RAMP = .35;
+
+function checkKeys(o, allowed, what){
+  for (const k of Object.keys(o)) if (!allowed.includes(k)) throw new LoomError(`"${k}" isn't a ${what} field. Use ${allowed.join(', ')}.` + suggest(k, allowed), lineOf(o, k));
+}
+const isMap = v => v && typeof v === 'object' && !Array.isArray(v);
+function needMap(v, what, line){ if (!isMap(v)) throw new LoomError(`${what} should be a map of names`, line); return v; }
+
+function buildModel(root, warnings){
+  checkKeys(root, TOP, 'top-level');
+  const M = {cell: root.cell != null ? String(root.cell) : 'Untitled cell', seed: root.seed | 0 || 1, warnings};
+  M.H = root.shift != null ? uDur(root.shift, 'shift', lineOf(root, 'shift')).v : 600;
+  if (M.H <= 0 || M.H > 3600) throw new LoomError('shift should be between 1 s and 60 min', lineOf(root, 'shift'));
+
+  // ---- world ----
+  const w = root.world || {};
+  if (root.world != null) { needMap(w, 'world', lineOf(root, 'world')); checkKeys(w, ['grid', 'platforms', 'stairs', 'penrose'], 'world'); }
+  const g = w.grid || [12, 10];
+  if (!Array.isArray(g) || g.length !== 2 || !g.every(n => Number.isInteger(n) && n >= 4 && n <= 32)) throw new LoomError('grid should be [columns, rows], each 4 to 32', lineOf(w, 'grid'));
+  M.W = g[0]; M.D = g[1];
+  M.tiles = Array.from({length: M.W}, () => Array.from({length: M.D}, () => ({kind: 'floor', level: 0})));
+  const inGrid = (x, z) => x >= 0 && z >= 0 && x < M.W && z < M.D;
+  const bayChk = (v, line, what) => { const b = uBay(v, line, what); if (!inGrid(b[0], b[1])) throw new LoomError(`${what} ${bayName(b[0], b[1])} is outside the ${colName(0)}1–${bayName(M.W - 1, M.D - 1)} grid`, line); return b; };
+  M.tile = (x, z) => inGrid(x, z) ? M.tiles[x][z] : null;
+
+  (w.platforms || []).forEach((p, i) => {
+    const ln = w.platforms[LINES] ? w.platforms[LINES][i] : lineOf(w, 'platforms');
+    if (!isMap(p)) throw new LoomError('Each platform is { at, size, level }', ln);
+    checkKeys(p, ['at', 'size', 'level'], 'platform');
+    const [x0, z0] = bayChk(p.at, ln, 'Platform');
+    const sz = p.size || [1, 1]; const lv = p.level == null ? 1 : p.level;
+    if (!Array.isArray(sz) || sz.length !== 2) throw new LoomError('size should be [width, depth] in bays', ln);
+    if (!Number.isInteger(lv) || lv < 1 || lv > 4) throw new LoomError('level should be a whole number from 1 to 4', ln);
+    for (let x = x0; x < x0 + sz[0]; x++) for (let z = z0; z < z0 + sz[1]; z++){
+      if (!inGrid(x, z)) throw new LoomError(`Platform runs off the grid at ${bayName(x, z)}`, ln);
+      M.tiles[x][z] = {kind: 'platform', level: lv};
+    }
+  });
+  M.stairs = [];
+  (w.stairs || []).forEach((s, i) => {
+    const ln = w.stairs[LINES] ? w.stairs[LINES][i] : lineOf(w, 'stairs');
+    if (!isMap(s)) throw new LoomError('Each stair is { at, dir, run }', ln);
+    checkKeys(s, ['at', 'dir', 'run'], 'stair');
+    const [x0, z0] = bayChk(s.at, ln, 'Stair');
+    const d = uDir(s.dir || 'east', ln); const run = s.run == null ? 2 : s.run;
+    if (!Number.isInteger(run) || run < 1 || run > 6) throw new LoomError('run should be 1 to 6 bays', ln);
+    const base = M.tiles[x0][z0].level;
+    const tiles = [];
+    for (let k = 0; k < run; k++){
+      const x = x0 + d[0] * k, z = z0 + d[1] * k;
+      if (!inGrid(x, z)) throw new LoomError(`Stair runs off the grid at ${bayName(x, z)}`, ln);
+      M.tiles[x][z] = {kind: 'stair', level: base, base, dir: d, run, idx: k};
+      tiles.push([x, z]);
+    }
+    const top = M.tile(x0 + d[0] * run, z0 + d[1] * run);
+    if (!top || top.kind === 'stair' || top.level !== base + 1) warnings.push({line: ln, msg: `The stair at ${bayName(x0, z0)} climbs to level ${base + 1}, but ${top ? bayName(x0 + d[0] * run, z0 + d[1] * run) + ' is at level ' + top.level : 'it leaves the grid'}. Figures can't use its top.`});
+    const btm = M.tile(x0 - d[0], z0 - d[1]);
+    if (!btm || btm.level !== base) warnings.push({line: ln, msg: `Nothing at level ${base} leads onto the stair at ${bayName(x0, z0)}.`});
+    M.stairs.push({x: x0, z: z0, dir: d, run, base});
+  });
+  M.ring = null;
+  if (w.penrose != null){
+    const p = w.penrose, ln = lineOf(w, 'penrose');
+    if (!isMap(p)) throw new LoomError('penrose is { at, size, rise }', ln);
+    checkKeys(p, ['at', 'size', 'rise'], 'penrose');
+    const [ax, az] = bayChk(p.at, ln, 'Penrose ring');
+    const n = p.size == null ? 5 : p.size, k = p.rise == null ? 1 : p.rise;
+    if (!Number.isInteger(n) || n < 4 || n > 12) throw new LoomError('size should be 4 to 12 bays', ln);
+    if (!Number.isInteger(k) || k < 1 || n - 1 - k < 2) throw new LoomError(`rise should be a whole number from 1 to ${n - 3} for a ring of size ${n}`, ln);
+    if (!inGrid(ax + n - 1, az + n - 1)) throw new LoomError('The ring runs off the grid', ln);
+    if (!inGrid(ax, az - 1)) throw new LoomError('The ring needs a free bay on its north side to step on from', ln);
+    const base = M.tiles[ax][az - 1].level;
+    for (let x = ax; x < ax + n; x++) for (let z = az; z < az + n; z++) M.tiles[x][z] = {kind: 'void', level: base};
+    M.ring = makeRing(ax, az, n, k, base);
+  }
+
+  // ---- items ----
+  M.items = {};
+  if (root.items != null){
+    needMap(root.items, 'items', lineOf(root, 'items'));
+    for (const [k, v] of Object.entries(root.items)){
+      const sh = String(v || 'cube').toLowerCase();
+      if (!SHAPES.includes(sh)) throw new LoomError(`Shape "${v}" should be ${SHAPES.join(', ')}.` + suggest(v, SHAPES), lineOf(root.items, k));
+      M.items[k] = sh;
+    }
+  }
+  const useItem = (k, line) => { if (!(k in M.items)){ M.items[k] = SHAPES[Object.keys(M.items).length % SHAPES.length]; warnings.push({line, msg: `Item "${k}" isn't listed under items, drawn as a ${M.items[k]}.`}); } };
+
+  // ---- stations ----
+  M.stations = {};
+  const sts = root.stations || {};
+  if (root.stations != null) needMap(sts, 'stations', lineOf(root, 'stations'));
+  for (const [name, s] of Object.entries(sts)){
+    const ln = lineOf(sts, name);
+    if (!isMap(s)) throw new LoomError(`Station "${name}" should be { at, kind, face }`, ln);
+    checkKeys(s, ['at', 'kind', 'face', 'stock', 'capacity', 'makes', 'cycle', 'label'], 'station');
+    if (s.at == null) throw new LoomError(`Station "${name}" needs at: a bay like J2`, ln);
+    const [x, z] = bayChk(s.at, ln, `Station "${name}"`);
+    const kind = String(s.kind || 'bench').toLowerCase();
+    if (!KINDS[kind]) throw new LoomError(`kind "${s.kind}" should be rack, machine, bench or bin.` + suggest(s.kind, Object.keys(KINDS)), ln);
+    const t = M.tiles[x][z];
+    if (t.kind !== 'floor' && t.kind !== 'platform') throw new LoomError(`${bayName(x, z)} is ${t.kind === 'stair' ? 'a stair' : t.kind === 'void' ? 'inside the ring' : 'taken by ' + t.name}; stations need flat floor`, ln);
+    const face = uDir(s.face || 'south', ln);
+    const ax = x + face[0], az = z + face[1], at = M.tile(ax, az);
+    if (!at || (at.kind !== 'floor' && at.kind !== 'platform') || at.level !== t.level) throw new LoomError(`Station "${name}" faces ${s.face || 'south'} onto ${inGrid(ax, az) ? bayName(ax, az) : 'the grid edge'}, which figures can't stand on. Pick another face.`, ln);
+    const cap = s.capacity == null ? KINDS[kind].cap : s.capacity;
+    if (!Number.isInteger(cap) || cap < 1 || cap > 99) throw new LoomError('capacity should be 1 to 99', ln);
+    let makes = null;
+    if (s.makes != null){
+      const m = String(s.makes).match(/^\s*(\S+)\s*(->|→)\s*(\S+)\s*$/);
+      if (!m) throw new LoomError('makes should look like "blank -> gear"', ln);
+      makes = {from: m[1], to: m[3]}; useItem(m[1], ln); useItem(m[3], ln);
+    }
+    if (kind !== 'machine' && (s.makes != null || s.cycle != null)) throw new LoomError(`Only machines take makes and cycle; "${name}" is a ${kind}`, ln);
+    const cycle = uDur(s.cycle, 'cycle', ln, {v: 3, j: 0});
+    const L = t.level;
+    const st = {name, kind, x, z, level: L, face, ax, az, cap, makes, cycle, line: ln, label: s.label ? String(s.label) : name,
+      c: V(x + .5, L, z + .5), yaw: Math.atan2(-face[1], -face[0]), stock: []};
+    st.spot = {x: x + .5 + face[0] * .8, z: z + .5 + face[1] * .8};
+    if (s.stock != null){
+      if (!isMap(s.stock)) throw new LoomError('stock should be a map like { blank: 6 }', ln);
+      for (const [k, n] of Object.entries(s.stock)){
+        if (!Number.isInteger(n) || n < 0) throw new LoomError(`stock of ${k} should be a whole number`, ln);
+        useItem(k, ln); for (let i = 0; i < n; i++) st.stock.push(k);
+      }
+      if (st.stock.length > cap) throw new LoomError(`"${name}" holds ${cap} but stock adds up to ${st.stock.length}`, ln);
+    }
+    M.tiles[x][z] = {kind: 'station', level: L, name};
+    M.stations[name] = st;
+  }
+
+  // ---- rigs ----
+  M.rigs = {figure: JSON.parse(JSON.stringify(RIG0))};
+  const readRig = (base, o, ln) => {
+    const r = JSON.parse(JSON.stringify(base));
+    checkKeys(o, ['height', 'gait', 'body', 'gaze', 'hands', 'rig', 'at'], 'rig');
+    if (o.height != null){ r.height = uNum(o.height, U_L, 'height', lineOf(o, 'height')); if (r.height < 1 || r.height > 2.4) throw new LoomError('height should be between 1 m and 2.4 m', lineOf(o, 'height')); }
+    if (o.gait != null){
+      const gg = o.gait, gl = lineOf(o, 'gait'); if (!isMap(gg)) throw new LoomError('gait is { cadence, stride, lift }', gl);
+      checkKeys(gg, ['cadence', 'stride', 'lift'], 'gait');
+      if (gg.cadence != null) r.cadence = clamp(uNum(gg.cadence, U_F, 'cadence', gl), .6, 3.5);
+      if (gg.stride != null) r.stride = clamp(uNum(gg.stride, U_L, 'stride', gl), .2, 1.4);
+      if (gg.lift != null) r.lift = clamp(uNum(gg.lift, U_L, 'lift', gl), .02, .4);
+    }
+    for (const sk of ['body', 'gaze', 'hands']) if (o[sk] != null){
+      const sp = o[sk], sl = lineOf(o, sk); if (!isMap(sp)) throw new LoomError(`${sk} is a spring { f, zeta, r }`, sl);
+      checkKeys(sp, ['f', 'zeta', 'r'], 'spring');
+      if (sp.f != null) r[sk].f = clamp(uNum(sp.f, U_F, 'f', sl), .2, 12);
+      if (sp.zeta != null) r[sk].z = clamp(+sp.zeta, 0, 3);
+      if (sp.r != null) r[sk].r = clamp(+sp.r, -4, 4);
+    }
+    return r;
+  };
+  if (root.rigs != null){
+    needMap(root.rigs, 'rigs', lineOf(root, 'rigs'));
+    for (const [k, v] of Object.entries(root.rigs)){ if (!isMap(v)) throw new LoomError(`Rig "${k}" should be a map`, lineOf(root.rigs, k)); M.rigs[k] = readRig(RIG0, v, lineOf(root.rigs, k)); }
+  }
+
+  // ---- crew ----
+  M.crew = [];
+  const cr = root.crew;
+  if (cr == null || !isMap(cr) || !Object.keys(cr).length) throw new LoomError('Add at least one figure under crew, like  ada: { rig: figure, at: C4 }', lineOf(root, 'crew') || 1);
+  const taken = new Set();
+  for (const [name, c] of Object.entries(cr)){
+    const ln = lineOf(cr, name);
+    if (!isMap(c)) throw new LoomError(`"${name}" should be { rig, at }`, ln);
+    const rn = c.rig == null ? 'figure' : String(c.rig);
+    if (!M.rigs[rn]) throw new LoomError(`No rig called "${rn}".` + suggest(rn, Object.keys(M.rigs)), ln);
+    if (c.at == null) throw new LoomError(`"${name}" needs at: a bay to start in`, ln);
+    const [x, z] = bayChk(c.at, ln, `"${name}"`);
+    const t = M.tiles[x][z];
+    if (!walkable(t)) throw new LoomError(`"${name}" starts in ${bayName(x, z)}, which is ${t.kind === 'station' ? 'station ' + t.name : t.kind === 'void' ? 'inside the ring' : 'not walkable'}`, ln);
+    if (taken.has(x + ',' + z)) warnings.push({line: ln, msg: `Two figures start in ${bayName(x, z)}.`});
+    taken.add(x + ',' + z);
+    const rig = readRig(M.rigs[rn], c, ln);
+    M.crew.push({name, idx: M.crew.length, rig, rigName: rn, x: x + .5, z: z + .5, line: ln, prog: []});
+  }
+
+  // ---- program ----
+  const pr = root.program || {};
+  if (root.program != null) needMap(pr, 'program', lineOf(root, 'program'));
+  const cn = M.crew.map(c => c.name);
+  for (const [name, list] of Object.entries(pr)){
+    const c = M.crew.find(q => q.name === name);
+    if (!c) throw new LoomError(`"${name}" isn't in crew.` + suggest(name, cn), lineOf(pr, name));
+    if (!Array.isArray(list)) throw new LoomError(`The program for "${name}" should be a list of steps starting with "- "`, lineOf(pr, name));
+    c.prog = compileSteps(M, list, lineOf(pr, name), useItem);
+  }
+  return M;
+}
+
+function parseTarget(M, v, line, allowRing){
+  if (v == null) throw new LoomError('This step needs a target: a station, a bay like E5, or penrose', line);
+  const s = String(v).trim();
+  if (M.stations[s]) return {type: 'station', st: M.stations[s], label: s};
+  if (s === 'penrose' && allowRing !== false){ if (!M.ring) throw new LoomError('There is no penrose ring in this world', line); return {type: 'ring', label: 'penrose'}; }
+  if (/^[A-Za-z]{1,2}\d{1,3}$/.test(s) || Array.isArray(v)){
+    const [x, z] = uBay(v, line, 'Target'); const t = M.tile(x, z);
+    if (!t) throw new LoomError(`${s} is outside the grid`, line);
+    if (!walkable(t)) throw new LoomError(`${bayName(x, z)} isn't walkable (${t.kind === 'station' ? 'station ' + t.name : t.kind})`, line);
+    return {type: 'bay', x: x + .5, z: z + .5, label: bayName(x, z)};
+  }
+  throw new LoomError(`"${s}" isn't a station or a bay.` + suggest(s, Object.keys(M.stations).concat(['penrose'])), line);
+}
+function stationRef(M, v, line){
+  const s = String(v == null ? '' : v).trim();
+  if (!M.stations[s]) throw new LoomError(`"${s}" isn't a station.` + suggest(s, Object.keys(M.stations)), line);
+  return M.stations[s];
+}
+
+function compileSteps(M, list, parentLine, useItem){
+  const out = [];
+  list.forEach((step, i) => {
+    const line = (list[LINES] && list[LINES][i]) || parentLine;
+    let verb, val, o = {};
+    if (typeof step === 'string'){ verb = step.trim(); val = null; }
+    else if (isMap(step)){
+      const keys = Object.keys(step);
+      verb = keys.find(k => VERBS.includes(k));
+      if (!verb) throw new LoomError(`"${keys[0]}" isn't a step.` + suggest(keys[0], VERBS), line);
+      val = step[verb]; o = step;
+    } else throw new LoomError('Each step is a verb like "pick: blank from dock"', line);
+    if (!VERBS.includes(verb)) throw new LoomError(`"${verb}" isn't a step.` + suggest(verb, VERBS), line);
+    const opts = {
+      walk: [], run: [], pick: ['from'], place: [], operate: ['for'], inspect: [], wait: [], signal: ['count'],
+      ascend: ['laps', 'lane'], descend: ['laps', 'lane'], repeat: ['do'], wave: [], nod: [], stretch: [], point: [], look: ['for'], idle: [],
+    }[verb];
+    if (isMap(step)) for (const k of Object.keys(step)) if (k !== verb && !opts.includes(k)) throw new LoomError(`${verb} doesn't take "${k}".` + (opts.length ? ` It takes ${opts.join(', ')}.` : '') + suggest(k, opts), lineOf(step, k));
+    const n = {op: verb, line};
+    switch (verb){
+      case 'walk': case 'run': n.to = parseTarget(M, val, line, false); break;
+      case 'pick': {
+        const s = String(val == null ? '' : val).trim();
+        const m = s.match(/^(\S+)\s+from\s+(\S+)$/);
+        if (m){ n.item = m[1]; n.st = stationRef(M, m[2], line); useItem(n.item, line); }
+        else if (o.from != null){ n.item = s || null; n.st = stationRef(M, o.from, line); if (n.item) useItem(n.item, line); }
+        else if (M.stations[s]){ n.item = null; n.st = M.stations[s]; }
+        else throw new LoomError(`Write pick as "pick: ${s || 'item'} from <station>"`, line);
+        break;
+      }
+      case 'place': n.st = stationRef(M, val, line); break;
+      case 'operate': n.st = stationRef(M, val, line); n.dur = o.for != null ? uDur(o.for, 'for', line) : null;
+        if (n.st.kind !== 'machine' && !n.dur) throw new LoomError(`"${n.st.name}" is a ${n.st.kind}. Only machines have a cycle; add for: 3s`, line); break;
+      case 'inspect': n.dur = uDur(val == null ? '2s' : val, 'inspect time', line); break;
+      case 'wait':
+        if (val == null) throw new LoomError('wait needs a signal name or a time like 2s', line);
+        if (typeof val === 'number' || /^\d/.test(String(val))) n.dur = uDur(val, 'wait time', line);
+        else n.signal = String(val).trim();
+        break;
+      case 'signal': if (val == null) throw new LoomError('signal needs a name like gear.ready', line); n.signal = String(val).trim(); n.count = o.count == null ? 1 : o.count;
+        if (!Number.isInteger(n.count) || n.count < 1) throw new LoomError('count should be a whole number', line); break;
+      case 'ascend': case 'descend':
+        if (String(val).trim() !== 'penrose') throw new LoomError(`${verb} works on the penrose ring: "${verb}: penrose"`, line);
+        if (!M.ring) throw new LoomError('There is no penrose ring in this world. Add world: penrose: { at: A7, size: 4 }', line);
+        n.laps = o.laps == null ? 1 : o.laps === 'forever' ? Infinity : o.laps;
+        if (!(n.laps === Infinity || (Number.isInteger(n.laps) && n.laps >= 1 && n.laps <= 50))) throw new LoomError('laps should be 1 to 50, or forever', lineOf(o, 'laps'));
+        n.lane = o.lane == null ? 'center' : String(o.lane);
+        if (!['inner', 'outer', 'center'].includes(n.lane)) throw new LoomError('lane should be inner, outer or center', lineOf(o, 'lane'));
+        break;
+      case 'repeat':
+        n.n = val === 'forever' ? Infinity : val;
+        if (!(n.n === Infinity || (Number.isInteger(n.n) && n.n >= 1 && n.n <= 1000))) throw new LoomError('repeat takes a count from 1 to 1000, or forever', line);
+        if (!Array.isArray(o.do) || !o.do.length) throw new LoomError('repeat needs a do: list of steps under it', line);
+        n.body = compileSteps(M, o.do, line, useItem); break;
+      case 'wave': case 'nod': case 'stretch': n.dur = val == null ? {v: GESTURE_T[verb], j: 0} : uDur(val, verb + ' time', line); break;
+      case 'point': n.to = parseTarget(M, val, line); n.dur = {v: GESTURE_T.point, j: 0}; break;
+      case 'look': n.to = parseTarget(M, val, line); n.dur = o.for != null ? uDur(o.for, 'for', line) : {v: 2, j: 0}; break;
+      case 'idle': n.dur = uDur(val == null ? '2s' : val, 'idle time', line); break;
+    }
+    out.push(n);
+  });
+  return out;
+}
+
+// ================= world queries =================
+function walkable(t){ return !!t && (t.kind === 'floor' || t.kind === 'platform' || t.kind === 'stair'); }
+function edgeH(t, dx, dz){
+  if (t.kind !== 'stair') return t.level;
+  const [sx, sz] = t.dir;
+  if (dx === sx && dz === sz) return t.base + (t.idx + 1) / t.run;
+  if (dx === -sx && dz === -sz) return t.base + t.idx / t.run;
+  return NaN;
+}
+function canStep(M, x, z, dx, dz){
+  const a = M.tile(x, z), b = M.tile(x + dx, z + dz);
+  if (!walkable(a) || !walkable(b)) return false;
+  if (dx && dz){
+    if (a.kind === 'stair' || b.kind === 'stair') return false;
+    const c = M.tile(x + dx, z), d = M.tile(x, z + dz);
+    if (!walkable(c) || !walkable(d) || c.kind === 'stair' || d.kind === 'stair') return false;
+    return a.level === b.level && c.level === a.level && d.level === a.level;
+  }
+  return Math.abs(edgeH(a, dx, dz) - edgeH(b, -dx, -dz)) < 1e-6;
+}
+function stairU(t, x, z, tx, tz){
+  const [sx, sz] = t.dir;
+  return sx === 1 ? x - tx : sx === -1 ? tx + 1 - x : sz === 1 ? z - tz : tz + 1 - z;
+}
+const TREADS = 3;
+function surfH(M, x, z){
+  const tx = Math.floor(x), tz = Math.floor(z), t = M.tile(tx, tz);
+  if (!t) return 0;
+  if (t.kind === 'stair') return t.base + (t.idx + clamp(stairU(t, x, z, tx, tz), 0, 1)) / t.run;
+  return t.level;
+}
+function treadH(M, x, z){
+  const tx = Math.floor(x), tz = Math.floor(z), t = M.tile(tx, tz);
+  if (!t) return 0;
+  if (t.kind === 'stair'){ const u = clamp(stairU(t, x, z, tx, tz), 0, .999); const g = t.idx * TREADS + Math.floor(u * TREADS); return t.base + (g + 1) / (t.run * TREADS); }
+  return t.level;
+}
+
+// A* over bays with stair edges
+function findPath(M, fx, fz, tx, tz){
+  const sx = Math.floor(fx), sz = Math.floor(fz), gx = Math.floor(tx), gz = Math.floor(tz);
+  const key = (x, z) => x * 64 + z;
+  const open = [{x: sx, z: sz, g: 0, f: 0}], came = new Map(), gs = new Map([[key(sx, sz), 0]]), closed = new Set();
+  const hh = (x, z) => { const dx = Math.abs(x - gx), dz = Math.abs(z - gz); return Math.max(dx, dz) + .414 * Math.min(dx, dz); };
+  while (open.length){
+    let bi = 0; for (let i = 1; i < open.length; i++) if (open[i].f < open[bi].f) bi = i;
+    const c = open.splice(bi, 1)[0], ck = key(c.x, c.z);
+    if (closed.has(ck)) continue; closed.add(ck);
+    if (c.x === gx && c.z === gz){
+      const cells = [[gx, gz]]; let k = ck;
+      while (came.has(k)){ k = came.get(k); cells.unshift([Math.floor(k / 64), k % 64]); }
+      return cells;
+    }
+    for (const [dx, dz] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){
+      if (!canStep(M, c.x, c.z, dx, dz)) continue;
+      const nx = c.x + dx, nz = c.z + dz, nk = key(nx, nz);
+      const t = M.tile(nx, nz);
+      const g = c.g + (dx && dz ? 1.414 : 1) + (t.kind === 'stair' ? .3 : 0);
+      if (g < (gs.has(nk) ? gs.get(nk) : Infinity)){ gs.set(nk, g); came.set(nk, ck); open.push({x: nx, z: nz, g, f: g + hh(nx, nz)}); }
+    }
+  }
+  return null;
+}
+function polyFromCells(M, fx, fz, cells, tx, tz){
+  let pts = [{x: fx, z: fz}];
+  for (let i = 1; i < cells.length - 1; i++) pts.push({x: cells[i][0] + .5, z: cells[i][1] + .5});
+  pts.push({x: tx, z: tz});
+  // keep points on stair tiles exactly on the axis; drop collinear points
+  const q = [pts[0]];
+  for (let i = 1; i < pts.length - 1; i++){
+    const a = q[q.length - 1], b = pts[i], c = pts[i + 1];
+    const cr = (b.x - a.x) * (c.z - b.z) - (b.z - a.z) * (c.x - b.x);
+    if (Math.abs(cr) > 1e-6) q.push(b);
+  }
+  q.push(pts[pts.length - 1]);
+  // Chaikin corner cutting, twice, endpoints fixed; skip corners on stairs
+  let r = q;
+  for (let it = 0; it < 2; it++){
+    const o = [r[0]];
+    for (let i = 1; i < r.length - 1; i++){
+      const a = r[i - 1], b = r[i], c = r[i + 1];
+      const t = M.tile(Math.floor(b.x), Math.floor(b.z));
+      if (t && t.kind === 'stair'){ o.push(b); continue; }
+      o.push({x: lerp(b.x, a.x, .25), z: lerp(b.z, a.z, .25)}, {x: lerp(b.x, c.x, .25), z: lerp(b.z, c.z, .25)});
+    }
+    o.push(r[r.length - 1]); r = o;
+  }
+  const cum = [0];
+  for (let i = 1; i < r.length; i++) cum.push(cum[i - 1] + Math.hypot(r[i].x - r[i - 1].x, r[i].z - r[i - 1].z));
+  return {pts: r, cum, L: cum[cum.length - 1]};
+}
+function trapS(u, a){ // fraction of distance at time fraction u with ramp fraction a at each end
+  if (a <= 0) return u;
+  const vm = 1 / (1 - a);
+  if (u < a) return vm * u * u / (2 * a);
+  if (u > 1 - a) return 1 - vm * (1 - u) * (1 - u) / (2 * a);
+  return vm * (u - a / 2);
+}
+function trapV(u, a){ const vm = 1 / (1 - a); if (u < a) return vm * u / a; if (u > 1 - a) return vm * (1 - u) / a; return vm; }
+function alongPoly(P, d){
+  const {pts, cum} = P; d = clamp(d, 0, P.L);
+  let i = 1; while (i < cum.length - 1 && cum[i] < d) i++;
+  const a = pts[i - 1], b = pts[i], seg = cum[i] - cum[i - 1] || 1e-9, t = (d - cum[i - 1]) / seg;
+  return {x: lerp(a.x, b.x, t), z: lerp(a.z, b.z, t), tx: (b.x - a.x) / seg, tz: (b.z - a.z) / seg};
+}
+
+// ================= Penrose ring =================
+function makeRing(ax, az, n, k, base){
+  const segs = [[1, 0, n - 1], [0, 1, n - 1], [-1, 0, n - 1 - k], [0, -1, n - 1 - k]];
+  const Lr = 4 * n - 4 - 2 * k;
+  const corners = []; let x = ax + .5, z = az + .5, s = 0;
+  for (const [dx, dz, l] of segs){ corners.push({x, z, s, dx, dz, l, nx: dz, nz: -dx}); x += dx * l; z += dz * l; s += l; }
+  const R = {ax, az, n, k, base, Lr, corners, entry: {x: ax + .5, z: az - .5}, cells: []};
+  for (let i = 0; i < Lr; i++){ const p = ringPt(R, i, 0); R.cells.push({i, x: p.x, z: p.z, h: p.y, cx: Math.floor(p.x), cz: Math.floor(p.z)}); }
+  return R;
+}
+// position on the helix in continuous (unwrapped) space; lane offsets along a smoothed outward normal
+function ringPt(R, s, lane){
+  const m = Math.floor(s / R.Lr), sm = s - m * R.Lr;
+  let i = 3; while (i > 0 && R.corners[i].s > sm) i--;
+  const c = R.corners[i], t = sm - c.s;
+  let x = c.x + c.dx * t, z = c.z + c.dz * t;
+  const y = R.base + sm * R.k / R.Lr + m * R.k;
+  if (lane){
+    const prev = R.corners[(i + 3) % 4], next = R.corners[(i + 1) % 4];
+    let nx = c.nx, nz = c.nz;
+    if (t < .5){ const b = .5 + t; nx = lerp(prev.nx, c.nx, b); nz = lerp(prev.nz, c.nz, b); }
+    else if (c.l - t < .5){ const b = .5 - (c.l - t); nx = lerp(c.nx, next.nx, b); nz = lerp(c.nz, next.nz, b); }
+    const nl = Math.hypot(nx, nz) || 1; x += nx / nl * lane; z += nz / nl * lane;
+  }
+  return {x: x + m * R.k, y, z: z + m * R.k, tx: c.dx, tz: c.dz, m};
+}
+const LANE = {inner: -.24, outer: .24, center: 0};
+
+// ================= discrete-event simulation =================
+function simulate(M){
+  const rng = mulberry(M.seed * 9973 + 17);
+  const sample = d => d.j ? Math.max(.05, d.v + (rng() * 2 - 1) * d.j) : d.v;
+  const H = M.H;
+  let uid = 1;
+  const S = {stations: {}, signals: [], faults: [], output: [], crew: []};
+  for (const st of Object.values(M.stations)){
+    S.stations[st.name] = {st, inv: st.stock.map(k => ({id: uid++, kind: k})), incoming: 0, lock: null, runs: [], log: []};
+  }
+  const logInv = (ss, t) => ss.log.push({t, items: ss.inv.map(i => ({id: i.id, kind: i.kind}))});
+  for (const ss of Object.values(S.stations)) logInv(ss, 0);
+  const tokens = {};
+  const W = M.crew.map(c => ({c, name: c.name, pos: {x: c.x, z: c.z}, yaw: -Math.PI / 2 + .6, hold: null, clips: [], stack: [{list: c.prog, i: 0, left: 0}], blocked: null, done: false, m: 0, pending: null, busy: 0, waited: 0, dist: 0, fault: null, holdLog: [{t: 0, kind: null}]}));
+  S.crew = W;
+  const pq = []; let seq = 0;
+  const push = e => { e.s = seq++; pq.push(e); return e; };
+  const pop = () => { let bi = 0; for (let i = 1; i < pq.length; i++){ const a = pq[i], b = pq[bi]; if (a.t < b.t - 1e-9 || (Math.abs(a.t - b.t) <= 1e-9 && a.s < b.s)) bi = i; } return pq.splice(bi, 1)[0]; };
+  const sched = (w, t) => { w.pending = push({t, w}); };
+  const at = (t, fn) => push({t, fn});
+  const wakeAll = t => { W.filter(w => w.blocked && !w.done && !w.fault).sort((a, b) => a.blocked.t0 - b.blocked.t0).forEach(w => { if (!(w.pending && Math.abs(w.pending.t - t) < 1e-9)) sched(w, t); }); };
+  const speedOf = (w, gait) => w.c.rig.cadence * w.c.rig.stride * (gait === 'run' ? 1.85 : 1);
+  const addClip = (w, cl) => { cl.m0 = w.m; w.clips.push(cl); return cl; };
+  const setHold = (w, t, kind) => w.holdLog.push({t, kind});
+
+  function current(w){
+    for (let guard = 0; guard < 10000; guard++){
+      const f = w.stack[w.stack.length - 1]; if (!f) return null;
+      if (f.i < f.list.length){
+        const ins = f.list[f.i];
+        if (ins.op === 'repeat'){ f.i++; w.stack.push({list: ins.body, i: 0, left: ins.n - 1, rep: ins}); continue; }
+        return ins;
+      }
+      if (f.rep && f.left > 0){ f.left--; f.i = 0; continue; }
+      w.stack.pop();
+    }
+    return null;
+  }
+  const advance = w => { w.stack[w.stack.length - 1].i++; };
+  function walkClip(w, tx, tz, t, gait, ins, why){
+    const cells = findPath(M, w.pos.x, w.pos.z, tx, tz);
+    if (!cells) return {fault: `${w.name} has no route from ${bayName(Math.floor(w.pos.x), Math.floor(w.pos.z))} to ${bayName(Math.floor(tx), Math.floor(tz))}. Check stairs and platform edges.`};
+    const P = polyFromCells(M, w.pos.x, w.pos.z, cells, tx, tz);
+    if (P.L < .02){ w.pos = {x: tx, z: tz}; return {dur: 0}; }
+    const v = speedOf(w, gait), T = P.L / v + RAMP;
+    addClip(w, {kind: 'walk', op: gait, t0: t, t1: t + T, line: ins.line, label: (gait === 'run' ? 'run' : 'walk') + ' → ' + why, sub: P.L.toFixed(1) + ' m', walk: P, a: RAMP / T, gait, carry: w.hold ? w.hold.kind : null, pos: {...w.pos}, v});
+    w.pos = {x: tx, z: tz}; w.dist += P.L; w.busy += T;
+    return {dur: T};
+  }
+  const atSpot = (w, p) => Math.hypot(w.pos.x - p.x, w.pos.z - p.z) < .05;
+  function goTo(w, st, t, ins){ if (atSpot(w, st.spot)) return null; return walkClip(w, st.spot.x, st.spot.z, t, 'walk', ins, st.name); }
+  const block = r => ({block: r});
+  const fault = m => ({fault: m});
+
+  function exec(w, ins, t){
+    const hk = w.hold ? w.hold.kind : null;
+    switch (ins.op){
+      case 'walk': case 'run': {
+        const tg = ins.to.type === 'station' ? ins.to.st.spot : ins.to;
+        const r = walkClip(w, tg.x, tg.z, t, ins.op, ins, ins.to.label); if (r.fault) return r;
+        advance(w); return r;
+      }
+      case 'pick': {
+        const ss = S.stations[ins.st.name]; const g = goTo(w, ins.st, t, ins); if (g) return g;
+        if (w.hold) return fault(`${w.name} already holds a ${w.hold.kind}. Place it before picking again.`);
+        if (ss.lock) return block(`${ss.st.name} is running`);
+        let idx = -1; for (let i = ss.inv.length - 1; i >= 0; i--){ const it = ss.inv[i]; if (!it.res && (!ins.item || it.kind === ins.item)){ idx = i; break; } }
+        if (idx < 0) return block(`no ${ins.item || 'item'} at ${ss.st.name}`);
+        const item = ss.inv[idx]; item.res = true;
+        const slot = slotPos(ss.st, idx);
+        const d = PICK_T, tg = t + d * .45;
+        at(tg, () => { ss.inv = ss.inv.filter(i => i !== item); logInv(ss, tg); });
+        w.hold = item; setHold(w, tg, item.kind);
+        addClip(w, {kind: 'work', op: 'pick', t0: t, t1: t + d, line: ins.line, label: 'pick ' + item.kind, sub: ss.st.name, st: ins.st, slot, item: item.kind, holdBefore: null, holdAfter: item.kind, pos: {...w.pos}, face: ins.st.yaw, reach: solveReach(w.c.rig, w.pos, ins.st.level, ins.st.yaw, slot), grabU: .45});
+        w.busy += d; advance(w); return {dur: d};
+      }
+      case 'place': {
+        const ss = S.stations[ins.st.name]; const g = goTo(w, ins.st, t, ins); if (g) return g;
+        if (!w.hold) return fault(`${w.name} has nothing to place at ${ss.st.name}. Pick something first.`);
+        if (ss.st.makes && w.hold.kind !== ss.st.makes.from) return fault(`${ss.st.name} takes ${ss.st.makes.from}, but ${w.name} holds a ${w.hold.kind}.`);
+        if (ss.lock) return block(`${ss.st.name} is running`);
+        if (ss.inv.length + ss.incoming >= ss.st.cap) return block(`${ss.st.name} is full (${ss.st.cap})`);
+        const item = w.hold, idx = ss.inv.length + ss.incoming; ss.incoming++;
+        const slot = slotPos(ss.st, idx);
+        const d = PLACE_T, tr = t + d * .5;
+        at(tr, () => { ss.incoming--; item.res = false; ss.inv.push(item); logInv(ss, tr); if (ss.st.kind === 'bin') S.output.push({t: tr, kind: item.kind, by: w.name}); });
+        setHold(w, tr, null);
+        addClip(w, {kind: 'work', op: 'place', t0: t, t1: t + d, line: ins.line, label: 'place ' + item.kind, sub: '→ ' + ss.st.name, st: ins.st, slot, item: item.kind, holdBefore: item.kind, holdAfter: null, pos: {...w.pos}, face: ins.st.yaw, reach: solveReach(w.c.rig, w.pos, ins.st.level, ins.st.yaw, slot), releaseU: .5});
+        w.hold = null; w.busy += d; advance(w); return {dur: d};
+      }
+      case 'operate': {
+        const ss = S.stations[ins.st.name]; const g = goTo(w, ins.st, t, ins); if (g) return g;
+        if (w.hold) return fault(`${w.name} is holding a ${w.hold.kind}. Place it before operating ${ss.st.name}.`);
+        if (ss.lock) return block(`${ss.st.name} is busy`);
+        let item = null;
+        if (ss.st.makes){ item = ss.inv.find(i => !i.res && i.kind === ss.st.makes.from); if (!item) return block(`${ss.st.name} has no ${ss.st.makes.from}`); item.res = true; }
+        const d = ins.dur ? sample(ins.dur) : sample(ss.st.cycle);
+        ss.lock = w.name; ss.runs.push({t0: t, t1: t + d, by: w.name});
+        at(t + d, () => { ss.lock = null; if (item){ item.kind = ss.st.makes.to; item.res = false; logInv(ss, t + d); } });
+        addClip(w, {kind: 'work', op: 'operate', t0: t, t1: t + d, line: ins.line, label: 'operate ' + ss.st.name, sub: d.toFixed(1) + ' s', st: ins.st, pos: {...w.pos}, face: ins.st.yaw});
+        w.busy += d; advance(w); return {dur: d};
+      }
+      case 'inspect': {
+        const d = sample(ins.dur);
+        addClip(w, {kind: 'work', op: 'inspect', t0: t, t1: t + d, line: ins.line, label: 'inspect ' + (hk || ''), sub: d.toFixed(1) + ' s', pos: {...w.pos}, face: w.yaw, carry: hk});
+        w.busy += d; advance(w); return {dur: d};
+      }
+      case 'wait': {
+        if (ins.dur){ const d = sample(ins.dur); addClip(w, {kind: 'wait', op: 'wait', t0: t, t1: t + d, line: ins.line, label: 'wait', sub: d.toFixed(1) + ' s', pos: {...w.pos}, face: w.yaw, carry: hk}); advance(w); return {dur: d}; }
+        if ((tokens[ins.signal] || 0) > 0){ tokens[ins.signal]--; advance(w); return {dur: 0}; }
+        return block(`waiting for ${ins.signal}`);
+      }
+      case 'signal': {
+        tokens[ins.signal] = (tokens[ins.signal] || 0) + ins.count;
+        S.signals.push({t, name: ins.signal, by: w.name, line: ins.line});
+        at(t, () => {});
+        addClip(w, {kind: 'gesture', op: 'signal', t0: t, t1: t + SIGNAL_T, line: ins.line, label: 'signal', sub: ins.signal, pos: {...w.pos}, face: w.yaw, carry: hk});
+        advance(w); return {dur: SIGNAL_T};
+      }
+      case 'ascend': case 'descend': {
+        const R = M.ring; if (!atSpot(w, R.entry)) return walkClip(w, R.entry.x, R.entry.z, t, 'walk', ins, 'penrose');
+        const v = speedOf(w, 'walk') * .8, sign = ins.op === 'ascend' ? 1 : -1;
+        let laps = ins.laps, forever = laps === Infinity;
+        if (forever) laps = Math.ceil((H - t) * v / R.Lr) + 1;
+        const Ltot = 2 + laps * R.Lr, T = Ltot / v + RAMP;
+        const t1 = forever ? Math.max(t + .5, H) : t + T;
+        const cl = addClip(w, {kind: 'ring', op: ins.op, t0: t, t1, line: ins.line, label: ins.op + (forever ? ' ∞' : ' × ' + laps), sub: (forever ? 'until the shift ends' : (Ltot).toFixed(0) + ' m'), ring: {sign, laps, lane: LANE[ins.lane], Ltot, T, forever}, a: RAMP / T, pos: {...w.pos}, v, carry: hk});
+        w.dist += Ltot; w.busy += t1 - t;
+        if (!forever) w.m += sign * laps;
+        advance(w);
+        if (forever){ w.done = true; w.endT = t1; return {dur: -1}; }
+        return {dur: T};
+      }
+      case 'wave': case 'nod': case 'stretch': case 'point': case 'look': case 'idle': {
+        const d = sample(ins.dur);
+        let face = w.yaw, look = null;
+        if (ins.to){ const p = targetPoint(M, ins.to); look = p; face = Math.atan2(p.z - w.pos.z, p.x - w.pos.x); }
+        addClip(w, {kind: ins.op === 'idle' ? 'wait' : 'gesture', op: ins.op, t0: t, t1: t + d, line: ins.line, label: ins.op, sub: ins.to ? ins.to.label : d.toFixed(1) + ' s', pos: {...w.pos}, face, look, carry: hk});
+        if (ins.op !== 'idle') w.busy += d;
+        advance(w); return {dur: d};
+      }
+    }
+    return {dur: 0};
+  }
+
+  function run(w, t){
+    w.pending = null;
+    for (let iter = 0; iter < 400; iter++){
+      if (t > H) return;
+      const ins = current(w);
+      if (!ins){ w.done = true; w.endT = t; return; }
+      const n0 = w.clips.length;
+      const r = exec(w, ins, t);
+      if (r.fault){ w.fault = {line: ins.line, msg: r.fault, t}; S.faults.push(w.fault); w.done = true; w.endT = t; return; }
+      if (r.block){ if (!w.blocked) w.blocked = {t0: t, reason: r.block, line: ins.line, pos: {...w.pos}, face: w.clips.length ? lastFace(w) : w.yaw, carry: w.hold ? w.hold.kind : null, m: w.m, st: ins.st || null}; else w.blocked.reason = r.block; return; }
+      if (w.blocked){
+        if (t - w.blocked.t0 > 1e-6){
+          const prev = w.clips[n0 - 1];
+          const cl = {kind: 'wait', blocked: true, op: 'blocked', t0: w.blocked.t0, t1: t, line: w.blocked.line, label: 'blocked', sub: w.blocked.reason, pos: {...w.blocked.pos}, face: w.blocked.face, carry: w.blocked.carry, why: w.blocked.reason, m0: w.blocked.m, st: w.blocked.st};
+          w.clips.splice(n0, 0, cl); w.waited += cl.t1 - cl.t0;
+        }
+        w.blocked = null;
+      }
+      if (w.clips.length) w.yaw = lastFace(w);
+      if (r.dur < 0) return;
+      if (r.dur > 0){ sched(w, t + r.dur); return; }
+    }
+    w.fault = {line: 0, msg: `${w.name} loops without spending time. Add a step that takes time inside the repeat.`, t}; S.faults.push(w.fault); w.done = true;
+  }
+  function lastFace(w){ const c = w.clips[w.clips.length - 1]; if (c.walk){ const q = alongPoly(c.walk, c.walk.L); return Math.atan2(q.tz, q.tx); } return c.face != null ? c.face : w.yaw; }
+
+  W.forEach(w => sched(w, 0));
+  let n = 0;
+  while (pq.length && n++ < 200000){
+    const e = pop(); if (e.t > H + 1e-9) break;
+    if (e.fn){ e.fn(); wakeAll(e.t); continue; }
+    const w = e.w; if (w.done || w.pending !== e) continue;
+    run(w, e.t);
+  }
+  // makespan and stalls
+  let span = 0;
+  for (const w of W) for (const c of w.clips) span = Math.max(span, Math.min(c.t1, H));
+  for (const w of W) if (w.done && w.endT != null) span = Math.max(span, Math.min(w.endT, H));
+  span = Math.max(span, 1);
+  S.stalls = [];
+  for (const w of W){
+    if (w.blocked && !w.done){
+      const t0 = w.blocked.t0;
+      if (span - t0 > .01){ const b = w.blocked; const cl = {kind: 'wait', blocked: true, op: 'blocked', t0, t1: span, line: b.line, label: 'blocked', sub: b.reason, pos: {...b.pos}, face: b.face, carry: b.carry, m0: b.m, stall: true, why: b.reason, st: b.st}; w.clips.push(cl); w.waited += span - t0; }
+      S.stalls.push({line: w.blocked.line, msg: `${w.name} is still ${w.blocked.reason.startsWith('waiting') ? '' : 'blocked: '}${w.blocked.reason} when the ${span >= H - .01 ? 'shift ends' : 'cell stops'}.`});
+    }
+    for (const c of w.clips) if (c.t1 > H) c.t1 = H;
+  }
+  S.span = span;
+  S.outCount = S.output.filter(o => o.t <= span + 1e-6).length;
+  return S;
+}
+function targetPoint(M, tg){
+  if (tg.type === 'station') return {x: tg.st.c.x, y: tg.st.level + 1, z: tg.st.c.z};
+  if (tg.type === 'ring'){ const R = M.ring; return {x: R.ax + R.n / 2, y: R.base + R.k / 2, z: R.az + R.n / 2}; }
+  return {x: tg.x, y: surfH(M, tg.x, tg.z) + 1, z: tg.z};
+}
+
+// item slots on stations, in world space
+function slotPos(st, i){
+  const f = st.face, lat = [-f[1], f[0]], c = st.c, L = st.level;
+  const P = (along, side, y) => V(c.x + f[0] * along + lat[0] * side, L + y, c.z + f[1] * along + lat[1] * side);
+  switch (st.kind){
+    case 'rack': { const order = [1, 2, 0]; const shelf = order[Math.floor(i / 4) % 3], k = i % 4; return P(k < 2 ? .16 : -.14, k % 2 ? .18 : -.18, [.36, .8, 1.24][shelf] + .02); }
+    case 'machine': return P(.2, 0, .92);
+    case 'bench': { const k = i % 4; return P(k < 2 ? .14 : -.12, k % 2 ? .2 : -.2, .87 + Math.floor(i / 4) * .1); }
+    case 'bin': { const k = i % 9, layer = Math.floor(i / 9); return P((Math.floor(k / 3) - 1) * .22, (k % 3 - 1) * .22, .1 + layer * .1); }
+  }
+  return P(0, 0, 1);
+}
+
+// Reach budget: search hinge (theta) and crouch (c) so the shoulders sit a comfortable reach from the target.
+function rigDims(rig){
+  const s = rig.height / 1.75;
+  return {s, thigh: .44 * s, shin: .43 * s, ankle: .07 * s, hipW: .1 * s, spine: .5 * s, shW: .19 * s, upper: .29 * s, fore: .27 * s, neck: .09 * s, head: .105 * s,
+    hip: (.44 + .43) * s * .975 + .07 * s};
+}
+function shoulderAt(D, hipY, px, pz, fx, fz, th){
+  const back = .22 * D.spine * Math.sin(th);
+  return V(px - fx * back + fx * D.spine * Math.sin(th), hipY + D.spine * Math.cos(th), pz - fz * back + fz * D.spine * Math.sin(th));
+}
+function solveReach(rig, pos, level, yaw, T){
+  const D = rigDims(rig), fx = Math.cos(yaw), fz = Math.sin(yaw), arm = D.upper + D.fore;
+  let best = {pitch: 0, crouch: 0}, bc = Infinity;
+  for (let th = -.1; th <= 1.25; th += .05) for (let c = 0; c <= .5; c += .05){
+    const S = shoulderAt(D, level + D.hip - c, pos.x, pos.z, fx, fz, th);
+    const d = len(sub(S, T));
+    const cost = 10 * (d - .8 * arm) ** 2 + .35 * Math.max(0, th) + .9 * c + 2 * Math.max(0, th - .7) ** 2 + (d > .97 * arm ? 60 * (d - .97 * arm) ** 2 : 0);
+    if (cost < bc){ bc = cost; best = {pitch: th, crouch: c}; }
+  }
+  return best;
+}
+
+function compile(src){
+  const warnings = [];
+  try {
+    const root = parseLoom(src);
+    const M = buildModel(root, warnings);
+    const S = simulate(M);
+    return {ok: true, errors: [], warnings, M, S, root};
+  } catch (e){
+    if (e instanceof LoomError) return {ok: false, errors: [{line: e.line, msg: e.message}], warnings};
+    throw e;
+  }
+}
+
+// ================= timeline → intent =================
+function clipAt(w, t){
+  const cs = w.clips; if (!cs.length || t < cs[0].t0) return null;
+  let lo = 0, hi = cs.length - 1;
+  while (lo < hi){ const mid = (lo + hi + 1) >> 1; if (cs[mid].t0 <= t) lo = mid; else hi = mid - 1; }
+  return cs[lo];
+}
+function ringState(M, c, d){
+  const R = M.ring, rs = c.ring, c0 = {x: R.ax + .5, z: R.az + .5}, K = R.k;
+  if (d < 1){ const x = lerp(R.entry.x, c0.x, d), z = lerp(R.entry.z, c0.z, d); return {x, z, y: R.base, ty: R.base, tx: 0, tz: 1, m: c.m0, lx: x, lz: z}; }
+  const sd = d - 1;
+  if (sd < rs.laps * R.Lr){
+    const s = rs.sign * sd, p = ringPt(R, s, rs.lane);
+    // p is unwrapped relative to the clip frame; p.m counts wraps
+    const lx = p.x - p.m * K, lz = p.z - p.m * K;
+    return {x: lx, z: lz, y: p.y - p.m * K, ty: R.base + Math.round(s) * R.k / R.Lr - p.m * K, tx: p.tx * rs.sign, tz: p.tz * rs.sign, m: c.m0 + p.m, onRing: true, s};
+  }
+  const e = Math.min(1, sd - rs.laps * R.Lr);
+  const x = lerp(c0.x, R.entry.x, e), z = lerp(c0.z, R.entry.z, e);
+  return {x, z, y: R.base, ty: R.base, tx: 0, tz: -1, m: c.m0 + rs.sign * rs.laps};
+}
+// Ground intent at time t, in continuous space C = real + m·k·(1,1,1)
+function groundAt(M, w, t){
+  const K = M.ring ? M.ring.k : 0;
+  const c = clipAt(w, t);
+  let x, z, y, ty, yaw, sp = 0, m = 0, onRing = false;
+  if (!c){ x = w.c.x; z = w.c.z; yaw = w.yaw0; }
+  else if (c.walk){
+    const T = c.t1 - c.t0, u = clamp((t - c.t0) / T, 0, 1);
+    const q = alongPoly(c.walk, trapS(u, c.a) * c.walk.L);
+    x = q.x; z = q.z; yaw = Math.atan2(q.tz, q.tx); m = c.m0;
+    sp = t < c.t1 ? trapV(u, c.a) * c.walk.L / T : 0;
+  } else if (c.ring){
+    const tau = t - c.t0; let d, spd;
+    if (c.ring.forever){ d = tau < RAMP ? c.v * tau * tau / (2 * RAMP) : c.v * (tau - RAMP / 2); spd = c.v * Math.min(1, tau / RAMP); }
+    else { const T = c.t1 - c.t0, u = clamp(tau / T, 0, 1); d = trapS(u, c.a) * c.ring.Ltot; spd = trapV(u, c.a) * c.ring.Ltot / T; }
+    d = clamp(d, 0, c.ring.Ltot);
+    const r = ringState(M, c, d);
+    x = r.x; z = r.z; yaw = Math.atan2(r.tz, r.tx); m = r.m; onRing = !!r.onRing;
+    sp = t < c.t1 ? spd : 0;
+    y = r.y; ty = r.ty;
+  } else { x = c.pos.x; z = c.pos.z; yaw = c.face != null ? c.face : w.yaw0; m = c.m0; }
+  if (y === undefined){ y = surfH(M, x, z); ty = treadH(M, x, z); }
+  const off = m * K;
+  return {x: x + off, y: y + off, z: z + off, ty: ty + off, yaw, sp, m, rx: x, rz: z, onRing, clip: c && t < c.t1 ? c : null, last: c};
+}
+function holdAt(w, t){ let k = null; for (const h of w.holdLog){ if (h.t <= t + 1e-9) k = h.kind; else break; } return k; }
+
+// ================= rig simulation =================
+const SIM_H = 1 / 120;
+function newAnim(M, w){
+  const D = rigDims(w.c.rig);
+  w.yaw0 = -Math.PI / 2 + .55;
+  const g = groundAt(M, w, 0);
+  const f = V(Math.cos(g.yaw), 0, Math.sin(g.yaw)), r = V(-Math.sin(g.yaw), 0, Math.cos(g.yaw));
+  const feet = [-1, 1].map(s => ({s, x: g.x + r.x * s * D.hipW, y: g.ty, z: g.z + r.z * s * D.hipW, yaw: g.yaw, planted: true, t: 0, from: null, to: null, dur: .3, lift: .08}));
+  return {D, t: 0, yaw: {}, lat: {}, pelY: {}, pitch: {}, roll: {}, crouch: {}, hy: {}, hp: {}, hands: [{}, {}], feet, nextStep: .2, nextFoot: 0, steps: 0, prevYaw: g.yaw, m: 0, pose: null};
+}
+function animStep(M, S, w, A, t, h){
+  const rig = w.c.rig, D = A.D;
+  const Kb = sodK(rig.body), Kg = sodK(rig.gaze), Kh = sodK(rig.hands);
+  const g = groundAt(M, w, t), c = g.clip;
+  const op = c ? c.op : 'rest', u = c ? clamp((t - c.t0) / (c.t1 - c.t0), 0, 1) : 0;
+  const hold = holdAt(w, t);
+  const off = g.m * (M.ring ? M.ring.k : 0), O = V(off, off, off), toC = p => add(p, O);
+  // heading
+  const yaw = sodA(A.yaw, g.yaw, h, sodK({f: rig.body.f * 1.1, z: .85, r: .2}));
+  const yawRate = wrapA(g.yaw - A.prevYaw) / h; A.prevYaw = g.yaw;
+  const fwd = V(Math.cos(yaw), 0, Math.sin(yaw)), rt = V(-Math.sin(yaw), 0, Math.cos(yaw));
+  // ---------- feet ----------
+  const run = c && c.gait === 'run';
+  const cad = rig.cadence * (run ? 1.45 : 1), Tstep = 1 / cad, Tsw = .8 * Tstep, Tst = 2 * Tstep - Tsw;
+  for (const ft of A.feet){
+    if (ft.planted) continue;
+    ft.t += h / ft.dur;
+    if (ft.t >= 1){ ft.planted = true; ft.x = ft.to.x; ft.y = ft.to.y; ft.z = ft.to.z; ft.yaw = ft.to.yaw; }
+    else {
+      const e = sstep(ft.t), ev = ft.to.y > ft.from.y ? sstep(Math.min(1, ft.t * 1.8)) : sstep(Math.max(0, ft.t * 1.4 - .4));
+      ft.x = lerp(ft.from.x, ft.to.x, e); ft.z = lerp(ft.from.z, ft.to.z, e);
+      ft.y = lerp(ft.from.y, ft.to.y, ev) + ft.lift * Math.sin(Math.PI * ft.t);
+      ft.yaw = ft.from.yaw + wrapA(ft.to.yaw - ft.from.yaw) * e;
+    }
+  }
+  const home = (G, s) => { const r2 = V(-Math.sin(G.yaw), 0, Math.cos(G.yaw)); return {x: G.x + r2.x * s * D.hipW, y: G.ty, z: G.z + r2.z * s * D.hipW, yaw: G.yaw}; };
+  const lag = !A.feet.some(f => !f.planted) && g.sp > .05 && (() => { const f = A.feet[A.nextFoot], hm = home(g, f.s); return Math.hypot(f.x - hm.x, f.z - hm.z) > .42 + .25 * rig.stride; })();
+  if (!A.feet.some(f => !f.planted) && (t >= A.nextStep || lag)){
+    const gA = groundAt(M, w, t + Tsw);
+    const moving = g.sp > .05 || gA.sp > .05 || Math.hypot(gA.x - g.x, gA.z - g.z) > .03;
+    let pick = -1, tgt = null;
+    if (moving){
+      pick = A.nextFoot;
+      tgt = home(groundAt(M, w, t + Tsw + Tst / 2), A.feet[pick].s);
+    } else {
+      let best = .07;
+      A.feet.forEach((f, i) => { const hm = home(gA, f.s); const e = Math.hypot(f.x - hm.x, f.z - hm.z) + Math.abs(wrapA(f.yaw - hm.yaw)) * .12 + Math.abs(f.y - hm.y); if (e > best){ best = e; pick = i; tgt = hm; } });
+    }
+    if (pick >= 0){
+      const ft = A.feet[pick];
+      ft.planted = false; ft.t = 0; ft.from = {x: ft.x, y: ft.y, z: ft.z, yaw: ft.yaw}; ft.to = tgt;
+      const dy = tgt.y - ft.y;
+      ft.dur = moving ? Tsw : .3; ft.lift = (moving ? rig.lift * (run ? 1.4 : 1) : rig.lift * .5) * (Math.abs(dy) > .05 ? .6 : 1) + Math.max(0, dy) * .22;
+      A.nextFoot = 1 - pick; A.nextStep = t + (moving ? Tstep : .32); A.steps++;
+    }
+  }
+  // ---------- body targets per activity ----------
+  let pT = .02, cT = 0, rT = 0, latX = 0;
+  const reachW = () => op === 'pick' ? (u < .45 ? sstep(u / .33) : 1 - sstep((u - .45) / .45)) : (u < .5 ? sstep(u / .38) : 1 - sstep((u - .5) / .4));
+  if (g.sp > .05){ pT = .04 + .05 * Math.min(1, g.sp / 1.4) + (hold ? .02 : 0); rT = clamp(-yawRate * g.sp * .07, -.16, .16); }
+  switch (op){
+    case 'pick': case 'place': { const k = reachW(); pT = c.reach.pitch * k; cT = c.reach.crouch * k; break; }
+    case 'operate': pT = .1; cT = .02; break;
+    case 'inspect': pT = -.03; break;
+    case 'blocked': case 'wait': rT = Math.sin(t * .8 + w.c.idx) * .035; latX = Math.sin(t * .4 + w.c.idx) * .035; break;
+    case 'stretch': pT = -.14 * Math.sin(Math.PI * u); break;
+    case 'signal': pT = -.03; break;
+    case 'wave': rT = -.05; break;
+  }
+  const pitch = sod1(A.pitch, pT, h, Kb), roll = sod1(A.roll, rT, h, Kb), crouch = sod1(A.crouch, cT, h, Kb);
+  // lateral sway toward the stance foot
+  const planted = A.feet.filter(f => f.planted);
+  let sup = null;
+  if (planted.length === 1) sup = planted[0]; else if (planted.length === 2) sup = {x: (planted[0].x + planted[1].x) / 2, z: (planted[0].z + planted[1].z) / 2};
+  const supLat = sup ? (sup.x - g.x) * rt.x + (sup.z - g.z) * rt.z : 0;
+  const lat = sod1(A.lat, clamp(supLat * .35, -.05, .05) + latX, h, sodK({f: 2, z: .8, r: 0}));
+  const back = .22 * D.spine * Math.sin(pitch);
+  const px = g.x + rt.x * lat - fwd.x * back, pz = g.z + rt.z * lat - fwd.z * back;
+  // pelvis height from the stance-leg constraint (inverted pendulum)
+  const Lleg = D.thigh + D.shin;
+  let hy = g.y + D.hip - crouch;
+  for (const f of planted){
+    const hx = px + rt.x * f.s * D.hipW, hz = pz + rt.z * f.s * D.hipW;
+    const dh = Math.hypot(hx - f.x, hz - f.z);
+    hy = Math.min(hy, f.y + D.ankle + Math.sqrt(Math.max(0, Lleg * Lleg - dh * dh)));
+  }
+  hy = Math.max(hy, g.y + D.hip - crouch - .13);
+  const pelY = sod1(A.pelY, hy, h, sodK({f: 6, z: .9, r: 0}));
+  const pel = V(px, pelY, pz);
+  // counter-rotation from the feet
+  const ffw = A.feet.map(f => (f.x - px) * fwd.x + (f.z - pz) * fwd.z);
+  const hipYaw = clamp(.18 * (ffw[1] - ffw[0]) / Math.max(.3, rig.stride), -.22, .22);
+  const shYaw = -hipYaw * .8;
+  const spineDir = norm(add(add(mul(UP, Math.cos(pitch) * Math.cos(roll)), mul(fwd, Math.sin(pitch))), mul(rt, Math.sin(roll))));
+  const chest = add(pel, mul(spineDir, D.spine));
+  const yS = yaw + shYaw, fS = V(Math.cos(yS), 0, Math.sin(yS)), rS = V(-Math.sin(yS), 0, Math.cos(yS));
+  const yH = yaw + hipYaw, rH = V(-Math.sin(yH), 0, Math.cos(yH));
+  const sh = [-1, 1].map(s => add(add(chest, mul(rS, s * D.shW)), mul(spineDir, -.03 * D.s)));
+  const hips = [-1, 1].map(s => add(pel, mul(rH, s * D.hipW)));
+  // ---------- hands ----------
+  const arm = D.upper + D.fore;
+  const carryC = add(add(chest, mul(fS, .34 * D.s)), mul(spineDir, -.26 * D.s));
+  const handT = [], poles = [];
+  const st = c && c.st ? c.st : null;
+  for (let i = 0; i < 2; i++){
+    const s = i ? 1 : -1, S0 = sh[i];
+    let T, pole = add(add(add(S0, mul(fS, -.3)), mul(rS, s * .22)), V(0, -.25, 0));
+    const rest = add(add(add(S0, V(0, -arm * .93, 0)), mul(fS, .05 - .38 * ffw[i] * Math.min(1, g.sp / .3))), mul(rS, s * .05));
+    const carry = add(carryC, mul(rS, s * .12 * D.s));
+    T = hold ? carry : rest;
+    if (op === 'pick' || op === 'place'){
+      const lat2 = st ? V(-st.face[1], 0, st.face[0]) : rS;
+      const grip = add(add(toC(c.slot), mul(lat2, s * .09)), V(0, .05, 0));
+      const reachPhase = op === 'pick' ? u < .45 : u < .5;
+      T = reachPhase ? grip : (op === 'pick' ? carry : rest);
+      if (reachPhase) pole = add(add(S0, mul(rS, s * .35)), V(0, .1, 0));
+    } else if (op === 'operate' && st){
+      const f2 = V(st.face[0], 0, st.face[1]), lat2 = V(-st.face[1], 0, st.face[0]);
+      const press = Math.max(0, Math.sin(2 * Math.PI * 1.3 * t + (s > 0 ? Math.PI : 0)));
+      T = add(add(add(toC(st.c), mul(f2, .5 - .05 * press)), mul(lat2, s * .16)), V(0, 1.02 + .03 * press, 0));
+      pole = add(add(S0, mul(rS, s * .35)), V(0, -.2, 0));
+    } else if (op === 'inspect' && hold){
+      T = add(add(add(chest, mul(fS, .3 * D.s)), V(0, .14 * D.s, 0)), mul(rS, s * .1 * D.s));
+      pole = add(add(S0, mul(rS, s * .3)), V(0, -.3, 0));
+    } else if ((op === 'blocked' || (op === 'wait' && !c.carry)) && !hold){
+      T = add(add(add(chest, mul(fS, .17 * D.s)), mul(spineDir, -.2 * D.s)), mul(rS, -s * .07 * D.s));
+      pole = add(add(add(S0, mul(rS, s * .3)), mul(fS, .15)), V(0, -.3, 0));
+    } else if (op === 'wave' && s > 0){
+      const b = Math.sin(Math.PI * clamp(u * 1.15, 0, 1));
+      T = vlerp(T, add(add(add(S0, V(0, .42 * D.s, 0)), mul(rS, (.24 + .1 * Math.sin(2 * Math.PI * 2.2 * t)) * D.s)), mul(fS, .08)), b);
+      pole = add(add(S0, mul(rS, .4)), V(0, -.2, 0));
+    } else if (op === 'signal' && s > 0){
+      const b = Math.sin(Math.PI * u);
+      T = vlerp(T, add(add(S0, V(0, .5 * D.s, 0)), mul(fS, .12)), b);
+      pole = add(add(S0, mul(rS, .4)), V(0, -.2, 0));
+    } else if (op === 'point' && s > 0 && c.look){
+      const dir = norm(sub(toC(V(c.look.x, c.look.y, c.look.z)), S0));
+      T = vlerp(T, add(S0, mul(dir, arm * .96)), Math.sin(Math.PI * clamp(u * 1.2, 0, 1)));
+      pole = add(add(S0, mul(rS, .4)), V(0, -.3, 0));
+    } else if (op === 'stretch'){
+      const b = Math.sin(Math.PI * u);
+      T = vlerp(T, add(add(S0, V(0, arm * .95, 0)), mul(rS, s * .06)), b);
+      pole = add(add(S0, mul(rS, s * .4)), V(0, -.1, 0));
+    }
+    handT.push(sod3(A.hands[i], T, h, Kh)); poles.push(pole);
+  }
+  // ---------- gaze ----------
+  let look = null;
+  if (c){
+    if (op === 'pick' || op === 'place') look = toC(c.slot);
+    else if (op === 'operate' && st) look = toC(add(add(st.c, mul(V(st.face[0], 0, st.face[1]), .45)), V(0, 1, 0)));
+    else if (op === 'inspect' && hold) look = add(add(chest, mul(fS, .3)), V(0, .14, 0));
+    else if (c.look) look = toC(V(c.look.x, c.look.y, c.look.z));
+    else if (op === 'blocked' && c.st) look = toC(add(c.st.c, V(0, 1, 0)));
+  }
+  if (!look && g.sp > .05){ const ga = groundAt(M, w, t + .9); look = V(ga.x, ga.y + 1.2 * D.s, ga.z); }
+  const neck = add(chest, mul(spineDir, .02));
+  let hyT = 0, hpT = -.05;
+  if (look){
+    hyT = clamp(wrapA(Math.atan2(look.z - neck.z, look.x - neck.x) - yaw), -1.15, 1.15);
+    hpT = clamp(Math.atan2(look.y - (neck.y + .12), Math.hypot(look.x - neck.x, look.z - neck.z)), -.8, .5);
+  } else { hyT = Math.sin(t * .37 + w.c.idx * 1.7) * .35 + Math.sin(t * .13 + w.c.idx) * .2; }
+  if (op === 'nod') hpT = -.05 - .3 * Math.max(0, Math.sin(2 * Math.PI * 1.8 * u)) * Math.sin(Math.PI * u);
+  const headYaw = sod1(A.hy, hyT, h, Kg), headPitch = sod1(A.hp, hpT - pitch * .6, h, Kg);
+  const upH = norm(vlerp(spineDir, UP, .6));
+  const headC = add(neck, mul(upH, D.neck + D.head * .95));
+  // store pose for drawing
+  A.pose = {pel, chest, neck, headC, sh, hips, handT, poles, yaw, fwd, rt, fS, rS, spineDir, headYaw: yaw + headYaw, headPitch, hold, op, u, m: g.m, g: {ty: g.ty, sp: g.sp, ci: g.clip ? w.clips.indexOf(g.clip) : -1}, look, pitch};
+  A.t = t;
+}
+
+// solve IK from a pose (render-time)
+function solveLimbs(A){
+  const P = A.pose, D = A.D;
+  const legs = A.feet.map((f, i) => {
+    const ankle = V(f.x, f.y + D.ankle, f.z);
+    const fy = V(Math.cos(f.yaw), 0, Math.sin(f.yaw));
+    const pole = add(add(P.hips[i], mul(fy, .6)), V(0, -.3, 0));
+    const r = ik2(P.hips[i], ankle, D.thigh, D.shin, pole);
+    return {hip: P.hips[i], knee: r.mid, ankle: r.end, toe: add(V(f.x, f.y + .02, f.z), mul(fy, .17 * D.s)), heel: add(V(f.x, f.y + .02, f.z), mul(fy, -.05 * D.s)), pole};
+  });
+  const arms = [0, 1].map(i => { const r = ik2(P.sh[i], P.handT[i], D.upper, D.fore, P.poles[i]); return {sh: P.sh[i], el: r.mid, hand: r.end, pole: P.poles[i], target: P.handT[i]}; });
+  return {legs, arms};
+}
+
+// ================= axonometric renderer =================
+const C = {};
+let PAT = {};
+function readColors(){
+  const cs = getComputedStyle(document.documentElement);
+  for (const k of ['stage', 'stage-grid', 'stage-major', 'floor', 'floor-grid', 'floor-line', 'shadow', 'bone', 'ink', 'muted', 'line', 'side-a', 'side-b', 'void', 'far', 'warn', 'panel']) C[k] = cs.getPropertyValue('--' + k).trim() || '#888';
+  const mk = (sz, fn) => { const c = document.createElement('canvas'); c.width = c.height = sz; const x = c.getContext('2d'); fn(x, sz); return c; };
+  const hatch = (col, gap, lw, bg) => mk(gap, (x, s) => { if (bg){ x.fillStyle = bg; x.fillRect(0, 0, s, s); } x.strokeStyle = col; x.lineWidth = lw; x.beginPath(); x.moveTo(-1, s + 1); x.lineTo(s + 1, -1); x.moveTo(-1, 1); x.lineTo(1, -1); x.moveTo(s - 1, s + 1); x.lineTo(s + 1, s - 1); x.stroke(); });
+  PAT.srcA = hatch(C['floor-grid'], 5, 1, C['side-a']);
+  PAT.srcVoid = hatch(C.muted, 4, .8, C.void);
+  PAT.srcShadow = hatch(C.shadow, 4, 1, null);
+  PAT.dirty = true;
+}
+function pats(ctx){
+  if (!PAT.dirty && PAT.ctx === ctx) return;
+  PAT.a = ctx.createPattern(PAT.srcA, 'repeat'); PAT.void = ctx.createPattern(PAT.srcVoid, 'repeat'); PAT.shadow = ctx.createPattern(PAT.srcShadow, 'repeat');
+  PAT.dirty = false; PAT.ctx = ctx;
+}
+const C30 = Math.cos(Math.PI / 6);
+const view = {yaw: 0, yawT: 0, zoom: 1, panX: 0, panY: 0, U: 40, OX: 0, OY: 0, W: 960, H: 600, cx: 6, cz: 5};
+function toView(x, z){ const c = Math.cos(view.yaw), s = Math.sin(view.yaw), dx = x - view.cx, dz = z - view.cz; return {x: view.cx + dx * c - dz * s, z: view.cz + dx * s + dz * c}; }
+function P(x, y, z){ const v = toView(x, z); return {x: view.OX + (v.x - v.z) * C30 * view.U, y: view.OY + ((v.x + v.z) * .5 - y) * view.U}; }
+const Pv = p => P(p.x, p.y, p.z);
+function depthOf(x, y, z){ const v = toView(x, z); return v.x + v.z + y * .001; }
+function fitView(M, W, H){
+  view.W = W; view.H = H; view.cx = M.W / 2; view.cz = M.D / 2;
+  const span = M.W + M.D;
+  view.U = view.zoom * Math.min(W / (span * C30 + 2.2), H / (span * .5 + 4.6));
+  view.OX = W / 2 - (view.cx - view.cz) * C30 * view.U + view.panX;
+  view.OY = H * .53 - (span / 4 - .7) * view.U + view.panY;
+}
+
+function poly(ctx, pts, fill, stroke, lw){
+  ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.closePath();
+  if (fill){ ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke){ ctx.strokeStyle = stroke; ctx.lineWidth = lw || 1; ctx.stroke(); }
+}
+function faceVisible(nx, nz){ const c = Math.cos(view.yaw), s = Math.sin(view.yaw); const vx = nx * c - nz * s, vz = nx * s + nz * c; return {vis: vx + vz > 1e-3, left: vz > vx}; }
+// axis-aligned box in world space
+function box(ctx, x0, z0, x1, z1, y0, y1, o = {}){
+  const sides = [[x0, z0, x1, z0, 0, -1], [x1, z0, x1, z1, 1, 0], [x1, z1, x0, z1, 0, 1], [x0, z1, x0, z0, -1, 0]];
+  const ink = o.ink || C.ink, lw = o.lw || 1;
+  for (const [ax, az, bx, bz, nx, nz] of sides){
+    const f = faceVisible(nx, nz); if (!f.vis) continue;
+    const q = [P(ax, y0, az), P(bx, y0, bz), P(bx, y1, bz), P(ax, y1, az)];
+    const fill = o.side || (f.left ? (o.plainA ? C['side-a'] : PAT.a) : (o.b || C['side-b']));
+    if (o.alpha != null) ctx.globalAlpha = o.alpha;
+    poly(ctx, q, fill, null);
+    ctx.globalAlpha = 1;
+    poly(ctx, q, null, ink, lw);
+  }
+  if (o.noTop) return;
+  const top = [P(x0, y1, z0), P(x1, y1, z0), P(x1, y1, z1), P(x0, y1, z1)];
+  if (o.alpha != null) ctx.globalAlpha = o.alpha;
+  poly(ctx, top, o.top || C.stage, null);
+  ctx.globalAlpha = 1;
+  poly(ctx, top, null, ink, lw);
+}
+function capsule(ctx, pts, w, fill, ink){
+  const pp = pts.map(Pv);
+  const path = () => { ctx.beginPath(); pp.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); };
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  path(); ctx.strokeStyle = ink; ctx.lineWidth = w + 2.2; ctx.stroke();
+  path(); ctx.strokeStyle = fill; ctx.lineWidth = w; ctx.stroke();
+}
+function pdot(ctx, p, r, fill, ink){ ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); if (fill){ ctx.fillStyle = fill; ctx.fill(); } if (ink){ ctx.strokeStyle = ink; ctx.lineWidth = 1; ctx.stroke(); } }
+function groundEllipse(ctx, x, y, z, r, n = 20){ ctx.beginPath(); for (let k = 0; k <= n; k++){ const a = k / n * Math.PI * 2, q = P(x + Math.cos(a) * r, y, z + Math.sin(a) * r); k ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y); } ctx.closePath(); }
+function cross2(ctx, p, sz, col, lw = 1){ ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.beginPath(); ctx.moveTo(p.x - sz, p.y); ctx.lineTo(p.x + sz, p.y); ctx.moveTo(p.x, p.y - sz); ctx.lineTo(p.x, p.y + sz); ctx.stroke(); }
+
+// ---------- items ----------
+function drawItem(ctx, kind, shape, p, yaw, opts = {}){
+  const s = opts.scale || 1;
+  const c = Math.cos(yaw), sn = Math.sin(yaw);
+  const L = (a, b) => ({x: p.x + a * c - b * sn, z: p.z + a * sn + b * c});
+  if (shape === 'disc'){
+    const r = .12 * s, hgt = .06 * s, n = 16;
+    const ring = y => Array.from({length: n}, (_, k) => { const a = k / n * Math.PI * 2 + yaw; return {x: p.x + Math.cos(a) * r, y, z: p.z + Math.sin(a) * r, a}; });
+    const b = ring(p.y), t = ring(p.y + hgt);
+    for (let k = 0; k < n; k++){
+      const k2 = (k + 1) % n, am = (b[k].a + (k2 ? b[k2].a : b[k2].a + Math.PI * 2)) / 2;
+      if (!faceVisible(Math.cos(am), Math.sin(am)).vis) continue;
+      poly(ctx, [Pv(b[k]), Pv(b[k2]), Pv(t[k2]), Pv(t[k])], C['side-b'], null);
+    }
+    const tp = t.map(Pv); poly(ctx, tp, C.stage, C.ink, 1);
+    const bp = b.map(Pv); ctx.strokeStyle = C.ink; ctx.lineWidth = 1; ctx.beginPath();
+    // silhouette sides
+    let li = 0, ri = 0; tp.forEach((q, i) => { if (q.x < tp[li].x) li = i; if (q.x > tp[ri].x) ri = i; });
+    ctx.moveTo(tp[li].x, tp[li].y); ctx.lineTo(bp[li].x, bp[li].y); ctx.moveTo(tp[ri].x, tp[ri].y); ctx.lineTo(bp[ri].x, bp[ri].y); ctx.stroke();
+    ctx.beginPath(); let started = false; for (let k = 0; k <= n; k++){ const kk = k % n, a = b[kk].a; if (faceVisible(Math.cos(a), Math.sin(a)).vis){ const q = bp[kk]; started ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y); started = true; } else started = false; } ctx.stroke();
+    groundEllipse(ctx, p.x, p.y + hgt, p.z, r * .35, 12); ctx.fillStyle = C.ink; ctx.fill();
+    return;
+  }
+  if (shape === 'sphere'){
+    const q = P(p.x, p.y + .1 * s, p.z), r = .1 * s * view.U;
+    pdot(ctx, q, r, C.stage, C.ink);
+    ctx.save(); ctx.beginPath(); ctx.arc(q.x, q.y, r, 0, Math.PI * 2); ctx.clip(); ctx.fillStyle = PAT.a; ctx.fillRect(q.x, q.y - r, r, r * 2); ctx.restore();
+    pdot(ctx, q, r, null, C.ink); return;
+  }
+  let hx = .1 * s, hz = .1 * s, hy = .2 * s;
+  if (shape === 'crate'){ hx = hz = .15 * s; hy = .26 * s; }
+  if (shape === 'rod'){ hx = .24 * s; hz = .035 * s; hy = .07 * s; }
+  // oriented box: approximate by rotating corners (draw via polygons)
+  const cs = [L(-hx, -hz), L(hx, -hz), L(hx, hz), L(-hx, hz)];
+  const y0 = p.y, y1 = p.y + hy;
+  for (let i = 0; i < 4; i++){
+    const a = cs[i], b = cs[(i + 1) % 4];
+    const nx = (b.z - a.z), nz = -(b.x - a.x);
+    const f = faceVisible(nx, nz); if (!f.vis) continue;
+    poly(ctx, [P(a.x, y0, a.z), P(b.x, y0, b.z), P(b.x, y1, b.z), P(a.x, y1, a.z)], f.left ? PAT.a : C['side-b'], C.ink, 1);
+  }
+  const top = cs.map(q => P(q.x, y1, q.z)); poly(ctx, top, C.stage, C.ink, 1);
+  if (shape === 'crate'){ ctx.beginPath(); ctx.moveTo(top[0].x, top[0].y); ctx.lineTo(top[2].x, top[2].y); ctx.moveTo(top[1].x, top[1].y); ctx.lineTo(top[3].x, top[3].y); ctx.strokeStyle = C.ink; ctx.lineWidth = 1; ctx.stroke(); }
+}
+
+// ---------- stations ----------
+function invAt(ss, t){ let r = ss.log[0].items; for (const e of ss.log){ if (e.t <= t + 1e-9) r = e.items; else break; } return r; }
+function runAt(ss, t){ for (const r of ss.runs) if (t >= r.t0 && t < r.t1) return r; return null; }
+function drawStation(ctx, M, ss, t, lbl){
+  const st = ss.st, x = st.x, z = st.z, L = st.level, inv = invAt(ss, t);
+  const items = inv.map((it, i) => ({it, p: slotPos(st, i)}));
+  const itemYaw = st.yaw;
+  const drawItems = f => items.filter(f).sort((a, b) => depthOf(a.p.x, a.p.y, a.p.z) - depthOf(b.p.x, b.p.y, b.p.z)).forEach(o => drawItem(ctx, o.it.kind, M.items[o.it.kind] || 'cube', o.p, itemYaw));
+  if (st.kind === 'rack'){
+    const a = .08, b = .92, pw = .05, Hh = 1.46;
+    const posts = [[a, a], [b - pw, a], [b - pw, b - pw], [a, b - pw]].map(([u, v]) => ({u, v, d: depthOf(x + u, 0, z + v)}));
+    posts.sort((p, q) => p.d - q.d);
+    const back = posts.slice(0, 2), front = posts.slice(2);
+    back.forEach(q => box(ctx, x + q.u, z + q.v, x + q.u + pw, z + q.v + pw, L, L + Hh, {lw: .8}));
+    [.34, .78, 1.22].forEach(hs => {
+      box(ctx, x + a, z + a, x + b, z + b, L + hs - .03, L + hs, {lw: .8});
+      drawItems(o => Math.abs(o.p.y - (L + hs + .02)) < .05);
+    });
+    front.forEach(q => box(ctx, x + q.u, z + q.v, x + q.u + pw, z + q.v + pw, L, L + Hh, {lw: .8}));
+  } else if (st.kind === 'machine'){
+    const f = st.face;
+    // body
+    box(ctx, x + .05, z + .05, x + .95, z + .95, L, L + .9);
+    // head on the back half
+    const bx0 = f[0] === 1 ? .05 : f[0] === -1 ? .5 : .05, bx1 = f[0] === 1 ? .5 : f[0] === -1 ? .95 : .95;
+    const bz0 = f[1] === 1 ? .05 : f[1] === -1 ? .5 : .05, bz1 = f[1] === 1 ? .5 : f[1] === -1 ? .95 : .95;
+    const run = runAt(ss, t);
+    // panel on the front face
+    const fv = faceVisible(f[0], f[1]);
+    if (fv.vis){
+      const lat = [-f[1], f[0]], cx = x + .5 + f[0] * .451, cz = z + .5 + f[1] * .451;
+      const Q = (s2, y) => P(cx + lat[0] * s2, L + y, cz + lat[1] * s2);
+      poly(ctx, [Q(-.22, .5), Q(.22, .5), Q(.22, .76), Q(-.22, .76)], C.stage, C.ink, 1);
+      for (let k = 0; k < 3; k++){ const q = Q(-.13 + k * .13, .63); pdot(ctx, q, 2.2, run && k === Math.floor(t * 3) % 3 ? C.ink : C.stage, C.ink); }
+    }
+    const items2 = items.slice();
+    const beforeHead = depthOf(x + .5 + f[0] * .25, L, z + .5 + f[1] * .25) < depthOf(x + (bx0 + bx1) / 2, L, z + (bz0 + bz1) / 2);
+    if (beforeHead) drawItems(() => true);
+    box(ctx, x + bx0, z + bz0, x + bx1, z + bz1, L + .9, L + 1.34);
+    // spindle and dial on the head
+    const hc = {x: x + (bx0 + bx1) / 2, z: z + (bz0 + bz1) / 2};
+    const top = P(hc.x, L + 1.34, hc.z), r = .16 * view.U;
+    ctx.beginPath(); ctx.ellipse(top.x, top.y, r, r * .5, 0, 0, Math.PI * 2); ctx.strokeStyle = C.ink; ctx.lineWidth = 1; ctx.stroke();
+    if (run){
+      const pr = (t - run.t0) / (run.t1 - run.t0);
+      ctx.beginPath(); ctx.moveTo(top.x, top.y); ctx.ellipse(top.x, top.y, r, r * .5, 0, -Math.PI / 2, -Math.PI / 2 + pr * Math.PI * 2); ctx.closePath(); ctx.fillStyle = C.ink; ctx.fill();
+      const sp = t * 9; ctx.beginPath(); ctx.moveTo(top.x, top.y); ctx.lineTo(top.x + Math.cos(sp) * r * 1.4, top.y + Math.sin(sp) * r * .7); ctx.strokeStyle = C.ink; ctx.lineWidth = 1.4; ctx.stroke();
+    }
+    if (!beforeHead) drawItems(() => true);
+    ss.labelY = L + 1.4; void items2;
+  } else if (st.kind === 'bench'){
+    const a = .1, b = .9, lw = .05;
+    for (const [u, v] of [[a, a], [b - lw, a], [a, b - lw], [b - lw, b - lw]].sort((p, q) => depthOf(x + p[0], 0, z + p[1]) - depthOf(x + q[0], 0, z + q[1])))
+      box(ctx, x + u, z + v, x + u + lw, z + v + lw, L, L + .8, {lw: .8});
+    box(ctx, x + .04, z + .04, x + .96, z + .96, L + .8, L + .86);
+    drawItems(() => true);
+  } else if (st.kind === 'bin'){
+    const a = .12, b = .88, hh = .55;
+    // inner back walls and floor
+    poly(ctx, [P(x + a, L + .02, z + a), P(x + b, L + .02, z + a), P(x + b, L + .02, z + b), P(x + a, L + .02, z + b)], C['side-a'], C.ink, .8);
+    drawItems(() => true);
+    box(ctx, x + a, z + a, x + b, z + b, L, L + hh, {alpha: .55, noTop: true, side: C.stage});
+    poly(ctx, [P(x + a, L + hh, z + a), P(x + b, L + hh, z + a), P(x + b, L + hh, z + b), P(x + a, L + hh, z + b)], null, C.ink, 1.2);
+    if (inv.length){ const q = P(x + .5, L + hh + .05, z + .5); ctx.fillStyle = C.ink; ctx.font = '700 10px Arial, Helvetica, sans-serif'; ctx.textAlign = 'center'; ctx.fillText('×' + inv.length, q.x, q.y - 2); }
+  }
+  if (lbl){
+    const topY = L + (st.kind === 'machine' ? 1.4 : st.kind === 'rack' ? 1.5 : st.kind === 'bench' ? .9 : .62);
+    leader(ctx, P(x + .5, topY, z + .5), st.label.toUpperCase(), view.W < 560 ? '' : `${bayName(x, z)} · ${st.kind.toUpperCase()}${st.makes ? ' · ' + st.makes.from.toUpperCase() + '→' + st.makes.to.toUpperCase() : ''}`, -1);
+  }
+}
+function leader(ctx, p, a, b, dir){
+  const L1 = 16, L2 = 8;
+  const x1 = p.x + dir * L2, y1 = p.y - L1;
+  ctx.strokeStyle = C.ink; ctx.lineWidth = .8; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(x1, y1); ctx.lineTo(x1 + dir * 6, y1); ctx.stroke();
+  pdot(ctx, p, 1.8, C.ink);
+  ctx.font = '700 9px Arial, Helvetica, sans-serif'; ctx.textAlign = dir > 0 ? 'left' : 'right';
+  const tx = x1 + dir * 9, w = Math.max(ctx.measureText(a).width, (ctx.font = '400 8.5px Arial, Helvetica, sans-serif', ctx.measureText(b || '').width));
+  ctx.globalAlpha = .88; ctx.fillStyle = C.stage; ctx.fillRect(dir > 0 ? tx - 2 : tx - w - 2, y1 - 10, w + 4, b ? 22 : 12); ctx.globalAlpha = 1;
+  ctx.fillStyle = C.ink; ctx.font = '700 9px Arial, Helvetica, sans-serif'; ctx.fillText(a, tx, y1);
+  if (b){ ctx.fillStyle = C.muted; ctx.font = '400 8.5px Arial, Helvetica, sans-serif'; ctx.fillText(b, tx, y1 + 10); }
+}
+
+// ---------- figure ----------
+function drawFigure(ctx, M, S, w, A, t, opts){
+  const P0 = A.pose; if (!P0) return;
+  const K = M.ring ? M.ring.k : 0, off = P0.m * K, O = V(-off, -off, -off);
+  const R = p => add(p, O);
+  const limbs = solveLimbs(A);
+  const D = A.D;
+  const legW = .13 * D.s * view.U, armW = .095 * D.s * view.U;
+  const parts = [];
+  const far = i => { const sd = i ? 1 : -1; const c = Math.cos(view.yaw), s = Math.sin(view.yaw); const rx = P0.rt.x * c - P0.rt.z * s, rz = P0.rt.x * s + P0.rt.z * c; return (rx + rz) * sd < 0; };
+  limbs.legs.forEach((L, i) => {
+    const pts = [L.hip, L.knee, L.ankle].map(R);
+    parts.push({d: depthOf((pts[0].x + pts[2].x) / 2, 0, (pts[0].z + pts[2].z) / 2) - .05, fn: () => {
+      const fill = far(i) ? C.far : C.stage;
+      capsule(ctx, pts, legW, fill, C.ink);
+      capsule(ctx, [R(L.heel), R(L.toe)], legW * .62, fill, C.ink);
+      pdot(ctx, Pv(pts[1]), 1.6, C.ink);
+    }});
+  });
+  limbs.arms.forEach((Ar, i) => {
+    const pts = [Ar.sh, Ar.el, Ar.hand].map(R);
+    parts.push({d: depthOf((pts[1].x + pts[2].x) / 2, 0, (pts[1].z + pts[2].z) / 2) + (far(i) ? -.08 : .06), fn: () => {
+      const fill = far(i) ? C.far : C.stage;
+      capsule(ctx, pts, armW, fill, C.ink);
+      pdot(ctx, Pv(pts[2]), armW * .62, fill, C.ink);
+    }});
+  });
+  const sh = P0.sh.map(R), hips = P0.hips.map(R), pel = R(P0.pel), chest = R(P0.chest), neck = R(P0.neck), head = R(P0.headC);
+  parts.push({d: depthOf(pel.x, 0, pel.z), fn: () => {
+    // torso: tapered quad from hips to shoulders, rounded by a thick outline
+    const q = [hips[0], hips[1], sh[1], sh[0]].map(Pv);
+    ctx.lineJoin = 'round';
+    poly(ctx, q, C.stage, C.ink, 1.2);
+    // pelvis block
+    const pb = [add(hips[0], V(0, -.07 * D.s, 0)), add(hips[1], V(0, -.07 * D.s, 0)), hips[1], hips[0]].map(Pv);
+    poly(ctx, pb, C['side-b'], C.ink, 1);
+    // sternum line shows the chest's facing
+    const a = Pv(add(chest, mul(P0.fS, .08 * D.s))), b2 = Pv(add(vlerp(pel, chest, .35), mul(P0.fS, .09 * D.s)));
+    const facing = faceVisible(P0.fS.x, P0.fS.z).vis;
+    if (facing){ ctx.setLineDash([2, 2]); ctx.strokeStyle = C.ink; ctx.lineWidth = .8; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b2.x, b2.y); ctx.stroke(); ctx.setLineDash([]); }
+    capsule(ctx, [neck, add(head, V(0, -.08 * D.s, 0))], .06 * D.s * view.U, C.stage, C.ink);
+  }});
+  // held item
+  if (P0.hold){
+    const hp = mul(add(limbs.arms[0].hand, limbs.arms[1].hand), .5);
+    const ip = R(add(hp, V(0, -.07, 0)));
+    let yaw = P0.yaw; if (P0.op === 'inspect') yaw += t * 1.6;
+    parts.push({d: depthOf(ip.x, 0, ip.z) + .02, fn: () => drawItem(ctx, P0.hold, M.items[P0.hold] || 'cube', ip, yaw)});
+  }
+  parts.push({d: depthOf(head.x, 0, head.z) + .01, fn: () => {
+    const q = Pv(head), r = D.head * view.U;
+    pdot(ctx, q, r, C.stage, C.ink); ctx.lineWidth = 1.2; ctx.strokeStyle = C.ink; ctx.beginPath(); ctx.arc(q.x, q.y, r, 0, Math.PI * 2); ctx.stroke();
+    // face: a short visor tick in the gaze direction, only when it faces the viewer
+    const hy = P0.headYaw, fd = V(Math.cos(hy) * Math.cos(P0.headPitch), Math.sin(P0.headPitch), Math.sin(hy) * Math.cos(P0.headPitch));
+    const fv = faceVisible(fd.x, fd.z);
+    const e1 = Pv(add(head, mul(fd, D.head * .55))), e2 = Pv(add(head, mul(fd, D.head * 1.05)));
+    if (fv.vis){ ctx.strokeStyle = C.ink; ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(e1.x, e1.y); ctx.lineTo(e2.x, e2.y); ctx.stroke(); }
+    else { const b = Pv(add(head, mul(fd, -D.head * .6))); pdot(ctx, b, 1.3, C.muted); }
+  }});
+  parts.sort((a, b) => a.d - b.d).forEach(p => p.fn());
+  w.screen = {head: Pv(head), pel: Pv(pel)};
+  if (opts.rig) drawRig(ctx, M, w, A, limbs, R);
+  if (opts.label){
+    const top = Pv(add(head, V(0, D.head + .08, 0)));
+    const c = P0.g.ci >= 0 ? w.clips[P0.g.ci] : null;
+    const doing = c ? (c.blocked ? 'BLOCKED · ' + c.why : c.label + (c.sub && c.kind !== 'walk' && c.kind !== 'ring' ? ' · ' + c.sub : '')) : 'done';
+    leader(ctx, top, w.name.toUpperCase(), opts.brief ? '' : doing.toUpperCase(), 1);
+  }
+}
+function drawRig(ctx, M, w, A, limbs, R){
+  const P0 = A.pose, col = C.warn;
+  ctx.save();
+  const chain = pts => { const pp = pts.map(p => Pv(R(p))); ctx.strokeStyle = col; ctx.lineWidth = 1.2; ctx.beginPath(); pp.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.stroke(); pp.forEach(p => { pdot(ctx, p, 2.6, C.stage, col); }); };
+  limbs.legs.forEach(L => chain([L.hip, L.knee, L.ankle]));
+  limbs.arms.forEach(a => chain([a.sh, a.el, a.hand]));
+  chain([P0.pel, P0.chest, P0.headC]);
+  ctx.setLineDash([2, 3]); ctx.lineWidth = .8;
+  [...limbs.legs.map(L => [L.knee, L.pole]), ...limbs.arms.map(a => [a.el, a.pole])].forEach(([j, pl]) => { const a = Pv(R(j)), b = Pv(R(pl)); ctx.strokeStyle = col; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); pdot(ctx, b, 2, null, col); });
+  ctx.setLineDash([]);
+  // support polygon and centre of mass
+  const pf = A.feet.filter(f => f.planted).map(f => R(V(f.x, f.y, f.z)));
+  if (pf.length === 2){ const a = Pv(pf[0]), b = Pv(pf[1]); ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
+  const pr = R(P0.pel); const gy = R(V(0, P0.g.ty, 0)).y; const com = Pv(V(pr.x, gy, pr.z)); pdot(ctx, com, 2.8, col);
+  // swing targets from the timeline look-ahead
+  A.feet.forEach(f => { if (f.planted || !f.to) return; const tp = R(V(f.to.x, f.to.y, f.to.z)); cross2(ctx, Pv(tp), 5, col, 1.4); ctx.strokeStyle = col; ctx.lineWidth = 1; groundEllipse(ctx, tp.x, tp.y, tp.z, .09, 12); ctx.stroke(); });
+  // gaze
+  if (P0.look){ const a = Pv(R(P0.headC)), b = Pv(R(P0.look)); ctx.setLineDash([1, 3]); ctx.strokeStyle = col; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); ctx.setLineDash([]); cross2(ctx, b, 4, col, 1.2); }
+  ctx.restore();
+}
+
+// ---------- the scene ----------
+function drawScene(ctx, M, S, anims, t, opts){
+  pats(ctx);
+  const W = view.W, H = view.H;
+  ctx.fillStyle = C.stage; ctx.fillRect(0, 0, W, H);
+  // drafting-paper grid
+  ctx.lineWidth = 1; ctx.strokeStyle = C['stage-grid']; ctx.beginPath();
+  for (let x = 0; x < W; x += 12){ ctx.moveTo(x + .5, 0); ctx.lineTo(x + .5, H); } for (let y = 0; y < H; y += 12){ ctx.moveTo(0, y + .5); ctx.lineTo(W, y + .5); } ctx.stroke();
+  ctx.strokeStyle = C['stage-major']; ctx.beginPath();
+  for (let x = 0; x < W; x += 60){ ctx.moveTo(x + .5, 0); ctx.lineTo(x + .5, H); } for (let y = 0; y < H; y += 60){ ctx.moveTo(0, y + .5); ctx.lineTo(W, y + .5); } ctx.stroke();
+
+  // floor slab
+  const g0 = [P(0, 0, 0), P(M.W, 0, 0), P(M.W, 0, M.D), P(0, 0, M.D)];
+  box(ctx, 0, 0, M.W, M.D, -.18, 0, {top: C.floor, lw: 1.2});
+  ctx.strokeStyle = C['floor-grid']; ctx.lineWidth = 1; ctx.beginPath();
+  for (let x = 1; x < M.W; x++){ const a = P(x, 0, 0), b = P(x, 0, M.D); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); }
+  for (let z = 1; z < M.D; z++){ const a = P(0, 0, z), b = P(M.W, 0, z); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); }
+  ctx.stroke();
+  poly(ctx, g0, null, C['floor-line'], 1.4);
+  if (M.ring){ const R = M.ring; poly(ctx, [P(R.ax, 0, R.az), P(R.ax + R.n, 0, R.az), P(R.ax + R.n, 0, R.az + R.n), P(R.ax, 0, R.az + R.n)], PAT.void, C.ink, 1); }
+  // grid bubbles: letters along x, numbers along z
+  if (opts.labels){
+    ctx.font = '700 9px Arial, Helvetica, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const bub = (p, s) => { pdot(ctx, p, 8, C.stage, C.ink); ctx.fillStyle = C.ink; ctx.fillText(s, p.x, p.y + .5); };
+    for (let x = 0; x < M.W; x++){ const a = P(x + .5, 0, -.2), b = P(x + .5, 0, -.75); ctx.strokeStyle = C.muted; ctx.lineWidth = .6; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); bub(P(x + .5, 0, -1.05), colName(x)); }
+    for (let z = 0; z < M.D; z++){ const a = P(-.2, 0, z + .5), b = P(-.75, 0, z + .5); ctx.strokeStyle = C.muted; ctx.lineWidth = .6; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); bub(P(-1.05, 0, z + .5), String(z + 1)); }
+    ctx.textBaseline = 'alphabetic';
+  }
+  // selected figure's route on the floor
+  if (opts.sel != null){
+    const w = S.crew[opts.sel];
+    const c = clipAt(w, t);
+    const K = M.ring ? M.ring.k : 0;
+    const ahead = w.clips.filter(k => k.walk && k.t1 > t).slice(0, 3);
+    ahead.forEach((k, j) => {
+      const pts = k.walk.pts; ctx.setLineDash([4, 4]); ctx.strokeStyle = j ? C.muted : C.ink; ctx.lineWidth = j ? 1 : 1.5; ctx.beginPath();
+      pts.forEach((q, i) => { const pp = P(q.x, surfH(M, q.x, q.z) + .02, q.z); i ? ctx.lineTo(pp.x, pp.y) : ctx.moveTo(pp.x, pp.y); }); ctx.stroke(); ctx.setLineDash([]);
+      const e = pts[pts.length - 1]; const q = P(e.x, surfH(M, e.x, e.z), e.z); ctx.strokeStyle = C.ink; groundEllipse(ctx, e.x, surfH(M, e.x, e.z) + .01, e.z, .16, 16); ctx.lineWidth = 1.2; ctx.stroke(); cross2(ctx, q, 4, C.ink);
+    });
+    void c; void K;
+  }
+
+  // ---- drawables ----
+  const items = [];
+  const key = (x, z) => { const v = toView(x + .5, z + .5); return v.x + v.z; };
+  for (let x = 0; x < M.W; x++) for (let z = 0; z < M.D; z++){
+    const tl = M.tiles[x][z];
+    if (tl.kind === 'platform') items.push({k: key(x, z), fn: () => box(ctx, x, z, x + 1, z + 1, 0, tl.level)});
+    else if (tl.kind === 'stair') items.push({k: key(x, z), fn: () => drawStairTile(ctx, x, z, tl)});
+    else if (tl.kind === 'station'){
+      const ss = S.stations[tl.name];
+      items.push({k: key(x, z), fn: () => { if (tl.level > 0) box(ctx, x, z, x + 1, z + 1, 0, tl.level); drawStation(ctx, M, ss, t, opts.labels); }});
+    }
+  }
+  const ringFigs = [];
+  anims.forEach((A, i) => {
+    const w = S.crew[i]; if (!A.pose) return;
+    const c = A.pose.g.ci >= 0 ? w.clips[A.pose.g.ci] : null;
+    const fo = {rig: opts.rig && (opts.rigAll || opts.sel === i), label: opts.labels, brief: (S.crew.length > 4 || view.W < 560) && opts.sel !== i};
+    if (M.ring && c && c.ring){ ringFigs.push({w, A, fo}); return; }
+    const K = M.ring ? M.ring.k : 0, off = A.pose.m * K;
+    let k = -1e9; for (const p of [A.pose.pel, ...A.feet]) k = Math.max(k, key(Math.floor(p.x - off), Math.floor(p.z - off)));
+    items.push({k: k + .5, fn: () => { drawShadow(ctx, M, A, off); drawFigure(ctx, M, S, w, A, t, fo); }});
+  });
+  if (M.ring){
+    const R = M.ring; let kmin = 1e9; R.cells.forEach(c => kmin = Math.min(kmin, key(c.cx, c.cz)));
+    items.push({k: kmin - .6, fn: () => drawRing(ctx, M, ringFigs, t)});
+  }
+  items.sort((a, b) => a.k - b.k).forEach(it => it.fn());
+
+  // signal pulses
+  for (const sg of S.signals){
+    const age = t - sg.t; if (age < 0 || age > 1) continue;
+    const i = S.crew.findIndex(w => w.name === sg.by), A = anims[i]; if (!A || !A.pose) continue;
+    const K = M.ring ? M.ring.k : 0, off = A.pose.m * K;
+    const h = Pv(add(A.pose.headC, V(-off, -off, -off)));
+    ctx.globalAlpha = 1 - age; ctx.strokeStyle = C.ink; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.arc(h.x, h.y - 6, 8 + age * 26, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = C.ink; ctx.font = '700 9px Arial, Helvetica, sans-serif'; ctx.textAlign = 'center'; ctx.fillText('◇ ' + sg.name, h.x, h.y - 40 - age * 12);
+    ctx.globalAlpha = 1;
+  }
+  drawTitle(ctx, M, S, t, opts);
+}
+function drawShadow(ctx, M, A, off){
+  const p = A.pose; const x = p.pel.x - off, z = p.pel.z - off, y = p.g.ty - off;
+  ctx.save(); groundEllipse(ctx, x, y + .005, z, .3, 18); ctx.clip();
+  const q = P(x, y, z); ctx.fillStyle = PAT.shadow; ctx.fillRect(q.x - 40, q.y - 20, 80, 40); ctx.restore();
+  ctx.strokeStyle = C.shadow; ctx.lineWidth = .8; groundEllipse(ctx, x, y + .005, z, .3, 18); ctx.stroke();
+}
+function drawStairTile(ctx, x, z, t){
+  const [sx, sz] = t.dir, n = TREADS;
+  const slices = [];
+  for (let k = 0; k < n; k++){
+    const u0 = k / n, u1 = (k + 1) / n;
+    let x0, x1, z0, z1;
+    if (sx === 1){ x0 = x + u0; x1 = x + u1; z0 = z; z1 = z + 1; }
+    else if (sx === -1){ x0 = x + 1 - u1; x1 = x + 1 - u0; z0 = z; z1 = z + 1; }
+    else if (sz === 1){ z0 = z + u0; z1 = z + u1; x0 = x; x1 = x + 1; }
+    else { z0 = z + 1 - u1; z1 = z + 1 - u0; x0 = x; x1 = x + 1; }
+    const top = t.base + (t.idx * n + k + 1) / (t.run * n);
+    slices.push({x0, x1, z0, z1, top, d: depthOf((x0 + x1) / 2, 0, (z0 + z1) / 2)});
+  }
+  slices.sort((a, b) => a.d - b.d).forEach(s => box(ctx, s.x0, s.z0, s.x1, s.z1, 0, s.top, {lw: .9}));
+}
+function drawRing(ctx, M, figs, t){
+  const R = M.ring, th = .5;
+  const els = [];
+  R.cells.forEach(c => {
+    const x0 = c.cx, z0 = c.cz, h = c.h;
+    els.push({d: depthOf(x0 + .5, h, z0 + .5) + h, fn: () => {
+      box(ctx, x0, z0, x0 + 1, z0 + 1, h - th, h, {lw: 1});
+      // tread nosing line
+      const q = [P(x0 + .12, h, z0 + .12), P(x0 + .88, h, z0 + .12), P(x0 + .88, h, z0 + .88), P(x0 + .12, h, z0 + .88)];
+      ctx.setLineDash([1.5, 2.5]); poly(ctx, q, null, C.muted, .6); ctx.setLineDash([]);
+    }});
+  });
+  figs.forEach(({w, A, fo}) => {
+    const K = R.k, off = A.pose.m * K; const p = A.pose.pel;
+    const x = p.x - off, z = p.z - off, y = A.pose.g.ty - off;
+    els.push({d: depthOf(x, y, z) + y + .45, fn: () => { drawShadow(ctx, M, A, off); drawFigure(ctx, M, null, w, A, t, fo); }});
+  });
+  els.sort((a, b) => a.d - b.d).forEach(e => e.fn());
+}
+function drawTitle(ctx, M, S, t, opts){
+  const W = view.W, H = view.H;
+  ctx.strokeStyle = C.ink; ctx.lineWidth = 1;
+  for (const [x, y] of [[14, 14], [W - 14, 14], [14, H - 14], [W - 14, H - 14]]){
+    ctx.beginPath(); ctx.moveTo(x - 7, y); ctx.lineTo(x + 7, y); ctx.moveTo(x, y - 7); ctx.lineTo(x, y + 7); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI * 2); ctx.stroke();
+  }
+  if (!opts.labels || W < 520) return;
+  const bw = Math.min(250, W * .42), bx = W - bw - 24, by = H - 58;
+  ctx.fillStyle = C.stage; ctx.fillRect(bx, by, bw, 36); ctx.strokeRect(bx, by, bw, 36);
+  ctx.beginPath(); ctx.moveTo(bx, by + 18); ctx.lineTo(bx + bw, by + 18); ctx.stroke();
+  ctx.fillStyle = C.ink; ctx.font = '700 9px Arial, Helvetica, sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText(('LOOM 0.1 · ' + M.cell).toUpperCase().slice(0, 44), bx + 8, by + 12.5);
+  ctx.font = '400 9px Arial, Helvetica, sans-serif';
+  const deg = Math.round(((view.yawT * 180 / Math.PI) % 360 + 360) % 360);
+  ctx.fillText(`AXON 30° · VIEW ${deg}° · T ${t.toFixed(2)} / ${S.span.toFixed(2)} s · 120 HZ`, bx + 8, by + 30.5);
+  // scale bar
+  const sb = 28, sy = H - 26, u = view.U;
+  for (let k = 0; k < 3; k++){ ctx.fillStyle = k % 2 ? C.stage : C.ink; ctx.fillRect(sb + k * u * C30, sy, u * C30, 4); }
+  ctx.strokeStyle = C.ink; ctx.strokeRect(sb, sy, 3 * u * C30, 4);
+  ctx.fillStyle = C.ink; ctx.font = '400 9px Arial, Helvetica, sans-serif'; ctx.textAlign = 'center';
+  for (let k = 0; k <= 3; k++) ctx.fillText(k + (k === 3 ? ' m' : ''), sb + k * u * C30, sy - 4);
+  // north arrow
+  const a = P(view.cx, 0, view.cz), b = P(view.cx, 0, view.cz - 1);
+  const ang = Math.atan2(b.y - a.y, b.x - a.x), nx = sb + 4 * u * C30 + 26, ny = sy - 6;
+  ctx.save(); ctx.translate(nx, ny); ctx.rotate(ang + Math.PI / 2);
+  ctx.beginPath(); ctx.arc(0, 0, 11, 0, Math.PI * 2); ctx.strokeStyle = C.ink; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, -11); ctx.lineTo(4, 4); ctx.lineTo(0, 1); ctx.lineTo(-4, 4); ctx.closePath(); ctx.fillStyle = C.ink; ctx.fill();
+  ctx.restore();
+  ctx.fillStyle = C.ink; ctx.font = '700 9px Arial, Helvetica, sans-serif'; ctx.fillText('N', nx + Math.cos(ang) * 20, ny + Math.sin(ang) * 20 + 3);
+}
+
+// ================= app =================
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const LS_SRC = 'loom-studio-src-v1', LS_EX = 'loom-studio-ex-v1';
+const store = {get(k){ try { return localStorage.getItem(k); } catch (e){ return null; } }, set(k, v){ try { localStorage.setItem(k, v); } catch (e){} }};
+
+const app = {M: null, S: null, R: null, anims: [], simT: 0, snaps: [], playT: 0, playing: true, loop: true, speed: 1, sel: 0, rig: true, labels: true, errLines: new Set(), hotLine: 0, runKey: '', pps: 8, ppsFit: true, tab: 'src', stations: []};
+const srcEl = $('src'), hlEl = $('hl'), gutEl = $('gutter'), cv = $('stage'), ctx = cv.getContext('2d');
+
+// ---------- editor: highlighting ----------
+function hlLine(line, names){
+  let code = line, com = '';
+  const ci = (() => { let q = null; for (let i = 0; i < line.length; i++){ const c = line[i]; if (q){ if (c === q) q = null; continue; } if (c === '"' || c === "'"){ q = c; continue; } if (c === '#' && (i === 0 || /\s/.test(line[i - 1]))) return i; } return -1; })();
+  if (ci >= 0){ code = line.slice(0, ci); com = line.slice(ci); }
+  let out = '';
+  const re = /(^\s*-\s)|("[^"]*"|'[^']*')|([A-Za-z_][\w.]*)(\s*:)(?=\s|$)|(-?\d+(?:\.\d+)?)(ms|min|s|cm|mm|m|hz|Hz)?|(->|→|±|\+-)|([{}\[\],])|([A-Za-z_][\w.]*)|(\s+)|(.)/g;
+  let m;
+  while ((m = re.exec(code))){
+    if (m[1]) out += `<span class="t-p">${esc(m[1])}</span>`;
+    else if (m[2]) out += `<span class="t-s">${esc(m[2])}</span>`;
+    else if (m[3]) out += `<span class="${VERBS.includes(m[3]) ? 't-v' : 't-k'}">${esc(m[3])}</span><span class="t-p">${esc(m[4])}</span>`;
+    else if (m[5] !== undefined){ out += `<span class="t-n">${esc(m[5])}</span>` + (m[6] ? `<span class="t-u">${esc(m[6])}</span>` : ''); }
+    else if (m[7]) out += `<span class="t-p">${esc(m[7])}</span>`;
+    else if (m[8]) out += `<span class="t-p">${esc(m[8])}</span>`;
+    else if (m[9]){
+      const w = m[9];
+      if (/^[A-Z]{1,2}\d{1,3}$/.test(w)) out += `<span class="t-g">${w}</span>`;
+      else if (names.has(w)) out += `<span class="t-r">${esc(w)}</span>`;
+      else if (VERBS.includes(w)) out += `<span class="t-v">${esc(w)}</span>`;
+      else out += esc(w);
+    }
+    else out += esc(m[0]);
+  }
+  if (com) out += `<span class="t-c">${esc(com)}</span>`;
+  return out;
+}
+let lastNames = new Set();
+function renderEditor(){
+  const lines = srcEl.value.split('\n');
+  const run = app.runLines || new Map();
+  hlEl.innerHTML = lines.map((l, i) => {
+    const n = i + 1, cls = ['ln'];
+    if (app.errLines.has(n)) cls.push('errl'); else if (n === app.hotLine) cls.push('hot'); else if (run.has(n)) cls.push('exec');
+    return `<span class="${cls.join(' ')}">${hlLine(l, lastNames) || ' '}</span>`;
+  }).join('');
+  gutEl.innerHTML = lines.map((_, i) => {
+    const n = i + 1, who = run.get(n);
+    return `<div class="gl${app.errLines.has(n) ? ' err' : ''}">${who ? `<span class="bad">${who.slice(0, 3).map(c => `<i title="${esc(c)}">${esc(c[0].toUpperCase())}</i>`).join('')}</span>` : ''}${n}</div>`;
+  }).join('');
+  syncScroll();
+}
+function syncScroll(){ hlEl.scrollTop = srcEl.scrollTop; hlEl.scrollLeft = srcEl.scrollLeft; gutEl.style.transform = `translateY(${-srcEl.scrollTop}px)`; }
+srcEl.addEventListener('scroll', syncScroll);
+function caretLine(){ return srcEl.value.slice(0, srcEl.selectionStart).split('\n').length; }
+function insertText(t){ srcEl.focus(); if (!document.execCommand || !document.execCommand('insertText', false, t)) srcEl.setRangeText(t, srcEl.selectionStart, srcEl.selectionEnd, 'end'); }
+srcEl.addEventListener('keydown', e => {
+  const v = srcEl.value, s = srcEl.selectionStart, en = srcEl.selectionEnd;
+  if (e.key === 'Tab'){
+    e.preventDefault();
+    const ls = v.lastIndexOf('\n', s - 1) + 1;
+    if (s === en && !e.shiftKey){ insertText('  '); return; }
+    const le = v.indexOf('\n', en - (en > s && v[en - 1] === '\n' ? 1 : 0)); const end = le < 0 ? v.length : le;
+    const block = v.slice(ls, end);
+    const nb = e.shiftKey ? block.replace(/^ {1,2}/gm, '') : block.replace(/^/gm, '  ');
+    srcEl.setSelectionRange(ls, end); insertText(nb); srcEl.setSelectionRange(ls, ls + nb.length);
+  } else if (e.key === 'Enter' && !e.metaKey && !e.ctrlKey){
+    e.preventDefault();
+    const ls = v.lastIndexOf('\n', s - 1) + 1, cur = v.slice(ls, s);
+    let ind = cur.match(/^\s*/)[0];
+    if (/^\s*-\s/.test(cur) && /:\s*$/.test(cur)) ind += '    ';
+    else if (/:\s*$/.test(cur)) ind += '  ';
+    else if (/^\s*-\s/.test(cur)) ind += '  ';
+    insertText('\n' + ind);
+  } else if (e.key === '/' && (e.metaKey || e.ctrlKey)){
+    e.preventDefault();
+    const ls = v.lastIndexOf('\n', s - 1) + 1; const le0 = v.indexOf('\n', en); const le = le0 < 0 ? v.length : le0;
+    const block = v.slice(ls, le); const all = block.split('\n').every(l => /^\s*#/.test(l) || !l.trim());
+    const nb = all ? block.replace(/^(\s*)# ?/gm, '$1') : block.replace(/^(\s*)(?=\S)/gm, '$1# ');
+    srcEl.setSelectionRange(ls, le); insertText(nb);
+  }
+});
+let compileTimer = 0;
+srcEl.addEventListener('input', () => { renderEditor(); store.set(LS_SRC, srcEl.value); clearTimeout(compileTimer); compileTimer = setTimeout(recompile, 260); });
+const caretUpd = () => { const l = caretLine(); if (l !== app.hotLine){ app.hotLine = l; renderEditor(); markHot(); } };
+['click', 'keyup', 'focus'].forEach(ev => srcEl.addEventListener(ev, caretUpd));
+function gotoLine(n){
+  if (!n) return;
+  if (app.tab !== 'src') setTab('src');
+  const lines = srcEl.value.split('\n'); let pos = 0; for (let i = 0; i < n - 1 && i < lines.length; i++) pos += lines[i].length + 1;
+  const ind = (lines[n - 1] || '').match(/^\s*(-\s*)?/)[0].length;
+  srcEl.focus({preventScroll: true}); srcEl.setSelectionRange(pos + ind, pos + (lines[n - 1] || '').length);
+  srcEl.scrollTop = Math.max(0, (n - 1) * 20 - srcEl.clientHeight / 2 + 20);
+  app.hotLine = n; renderEditor(); markHot();
+}
+
+// ---------- compile ----------
+function recompile(){
+  const r = compile(srcEl.value);
+  app.R = r;
+  app.errLines = new Set(r.errors.map(e => e.line));
+  if (r.ok){
+    const keepT = app.playT;
+    app.M = r.M; app.S = r.S; lastNames = new Set([...Object.keys(r.M.stations), ...r.M.crew.map(c => c.name), 'penrose']);
+    r.S.faults.forEach(f => f.line && app.errLines.add(f.line));
+    if (app.sel != null && app.sel >= r.S.crew.length) app.sel = 0;
+    resetSim();
+    app.playT = Math.min(keepT, r.S.span); seek(app.playT);
+    fitCanvas(); renderTL(); renderMetrics(); selectCrew(app.sel || 0); $('jsView').innerHTML = hlJS(emitJS(r.M, r.S, r.root));
+  }
+  renderDiags(); renderEditor();
+}
+function renderDiags(){
+  const r = app.R, el = $('diags'); const out = [];
+  r.errors.forEach(e => out.push(`<div class="diag err" data-line="${e.line}"><b>Line ${e.line}</b><span>${esc(/[.?!]$/.test(e.msg) ? e.msg : e.msg + '.')}${app.S ? ' The stage keeps the last good build.' : ''}</span></div>`));
+  if (r.ok){
+    r.S.faults.forEach(e => out.push(`<div class="diag err" data-line="${e.line}"><b>Line ${e.line} · ${e.t.toFixed(1)} s</b><span>${esc(e.msg)}</span></div>`));
+    r.S.stalls.forEach(e => out.push(`<div class="diag err" data-line="${e.line}"><b>Line ${e.line}</b><span>${esc(e.msg)}</span></div>`));
+    const nClips = r.S.crew.reduce((a, w) => a + w.clips.length, 0);
+    if (!r.S.faults.length) out.unshift(`<div class="diag ok"><b>Compiled</b><span>${r.M.crew.length} crew · ${Object.keys(r.M.stations).length} stations · ${nClips} clips · cycle ${r.S.span.toFixed(1)} s</span></div>`);
+  }
+  r.warnings.forEach(e => out.push(`<div class="diag warnd" data-line="${e.line}"><b>Line ${e.line}</b><span>${esc(e.msg)}</span></div>`));
+  el.innerHTML = out.join('');
+  const bad = r.errors.length || (r.ok && (r.S.faults.length || r.S.stalls.length));
+  $('hudState').className = 'chip' + (bad ? ' warn' : '');
+}
+$('diags').addEventListener('click', e => { const d = e.target.closest('[data-line]'); if (d) gotoLine(+d.dataset.line); });
+
+// ---------- simulation / scrubbing ----------
+function resetSim(){
+  const {M, S} = app;
+  app.anims = S.crew.map(w => newAnim(M, w));
+  app.simT = 0;
+  for (let i = 0; i < 12; i++){ app.anims.forEach((A, k) => animStep(M, S, S.crew[k], A, 0, SIM_H)); }
+  app.snaps = [{t: 0, a: structuredClone(app.anims)}];
+}
+function stepTo(t){
+  const {M, S} = app; let n = 0;
+  while (app.simT + SIM_H <= t + 1e-9 && n < 400000){
+    app.simT += SIM_H; n++;
+    for (let i = 0; i < app.anims.length; i++) animStep(M, S, S.crew[i], app.anims[i], app.simT, SIM_H);
+    const k = Math.floor(app.simT + 1e-9);
+    if (k > 0 && !app.snaps[k] && app.simT - k < SIM_H - 1e-9) app.snaps[k] = {t: app.simT, a: structuredClone(app.anims)};
+  }
+}
+function seek(t){
+  t = clamp(t, 0, app.S.span);
+  if (t < app.simT - 1e-9 || t - app.simT > 2){
+    let k = Math.min(Math.floor(t), app.snaps.length - 1);
+    while (k > 0 && !(app.snaps[k] && app.snaps[k].t <= t + 1e-9)) k--;
+    const s = app.snaps[Math.max(0, k)];
+    if (!(t >= app.simT && s.t <= app.simT)){ app.anims = structuredClone(s.a); app.simT = s.t; }
+  }
+  stepTo(t); app.playT = t;
+}
+
+// ---------- canvas ----------
+let dpr = 1, CW = 960, CH = 600;
+function fitCanvas(){
+  const r = cv.getBoundingClientRect(); if (!r.width) return;
+  dpr = Math.min(2, window.devicePixelRatio || 1); CW = r.width; CH = r.height;
+  cv.width = Math.round(CW * dpr); cv.height = Math.round(CH * dpr);
+  if (app.M) fitView(app.M, CW, CH);
+}
+new ResizeObserver(() => { fitCanvas(); layoutTL(); }).observe(cv);
+function draw(){
+  if (!app.M) return;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  fitView(app.M, CW, CH);
+  drawScene(ctx, app.M, app.S, app.anims, app.playT, {labels: app.labels, rig: app.rig, sel: app.sel, rigAll: false});
+}
+// pan and pick
+let drag = null;
+cv.addEventListener('pointerdown', e => { drag = {x: e.clientX, y: e.clientY, px: view.panX, py: view.panY, moved: false}; cv.setPointerCapture(e.pointerId); });
+cv.addEventListener('pointermove', e => { if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; if (Math.hypot(dx, dy) > 4){ drag.moved = true; cv.classList.add('dragging'); } if (drag.moved){ view.panX = drag.px + dx; view.panY = drag.py + dy; } });
+cv.addEventListener('pointerup', e => {
+  cv.classList.remove('dragging');
+  if (drag && !drag.moved && app.S){
+    const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    let best = -1, bd = 34;
+    app.S.crew.forEach((w, i) => { if (!w.screen) return; for (const p of [w.screen.head, w.screen.pel]){ const d = Math.hypot(p.x - x, p.y - y); if (d < bd){ bd = d; best = i; } } });
+    if (best >= 0) selectCrew(best);
+  }
+  drag = null;
+});
+cv.addEventListener('dblclick', () => { view.panX = view.panY = 0; view.zoom = 1; });
+function rotate(d){ view.yawT += d * Math.PI / 2; }
+$('vRotL').onclick = () => rotate(-1); $('vRotR').onclick = () => rotate(1);
+$('vZoomIn').onclick = () => { view.zoom = Math.min(3, view.zoom * 1.2); };
+$('vZoomOut').onclick = () => { view.zoom = Math.max(.5, view.zoom / 1.2); };
+$('vRig').onclick = () => { app.rig = !app.rig; $('vRig').setAttribute('aria-pressed', String(app.rig)); };
+$('vLabels').onclick = () => { app.labels = !app.labels; $('vLabels').setAttribute('aria-pressed', String(app.labels)); };
+function selectCrew(i){
+  app.sel = i;
+  document.querySelectorAll('.lanes-l .crewl').forEach((d, k) => d.classList.toggle('sel', k === i));
+  const hs = $('hudSel'); hs.hidden = false; hs.textContent = app.S.crew[i].name;
+  renderCrewRows(true);
+}
+
+// ---------- timeline ----------
+const lanesL = $('lanesL'), lanesEl = $('lanes'), ruler = $('ruler'), tlInner = $('tlInner'), tlScroll = $('tlScroll'), playhead = $('playhead');
+function renderTL(){
+  const {M, S} = app;
+  const ls = [`<div style="height:24px">Time</div>`];
+  const lanes = [];
+  S.crew.forEach((w, i) => {
+    ls.push(`<div class="crewl${i === app.sel ? ' sel' : ''}" data-i="${i}" style="height:46px" title="Select ${esc(w.name)}">${esc(w.name)}</div>`);
+    lanes.push(`<div class="lane crewlane" data-i="${i}">` + w.clips.map((c, k) => `<div class="clip ${c.kind}${c.blocked ? ' blocked' : ''}${c.carry && c.kind === 'walk' ? ' carry' : ''}" data-i="${i}" data-k="${k}" data-line="${c.line}" tabindex="-1" title="${esc(c.label + (c.sub ? ' · ' + c.sub : '') + ` · ${c.t0.toFixed(1)}–${c.t1.toFixed(1)} s · line ${c.line}`)}"><b>${esc(c.label)}</b><span>${esc(c.sub || '')}</span></div>`).join('') + `</div>`);
+  });
+  Object.values(S.stations).filter(ss => ss.st.kind === 'machine').forEach(ss => {
+    ls.push(`<div style="height:22px" title="${esc(ss.st.name)} running">${esc(ss.st.name)}</div>`);
+    lanes.push(`<div class="lane stlane">` + ss.runs.map(r => `<div class="run" data-t0="${r.t0}" data-t1="${r.t1}" title="${esc(ss.st.name)} runs ${r.t0.toFixed(1)}–${r.t1.toFixed(1)} s for ${esc(r.by)}"></div>`).join('') + `</div>`);
+  });
+  if (S.signals.length){
+    ls.push(`<div style="height:26px">Signals</div>`);
+    lanes.push(`<div class="lane siglane">` + S.signals.map(s => `<div class="sig" data-t="${s.t}"><i></i><em>${esc(s.name)}</em></div>`).join('') + `</div>`);
+  }
+  lanesL.innerHTML = ls.join(''); lanesEl.innerHTML = lanes.join('');
+  $('tTot').textContent = S.span.toFixed(1);
+  layoutTL(); markHot(); void M;
+}
+function layoutTL(){
+  if (!app.S) return;
+  const span = app.S.span, vw = tlScroll.clientWidth || 600;
+  if (app.ppsFit) app.pps = Math.max(2, (vw - 16) / span);
+  const pps = app.pps;
+  tlInner.style.width = Math.max(vw, span * pps + 16) + 'px';
+  lanesEl.querySelectorAll('.clip').forEach(d => {
+    const c = app.S.crew[+d.dataset.i].clips[+d.dataset.k];
+    const w = Math.max(2, (c.t1 - c.t0) * pps - 1);
+    d.style.left = (c.t0 * pps) + 'px'; d.style.width = w + 'px'; d.classList.toggle('tiny', w < 40);
+  });
+  lanesEl.querySelectorAll('.run').forEach(d => { d.style.left = (+d.dataset.t0 * pps) + 'px'; d.style.width = Math.max(1, (+d.dataset.t1 - +d.dataset.t0) * pps) + 'px'; });
+  lanesEl.querySelectorAll('.sig').forEach(d => { d.style.left = (+d.dataset.t * pps) + 'px'; });
+  // ruler
+  const step = pps > 40 ? 1 : pps > 12 ? 5 : pps > 4 ? 10 : 30, minor = step >= 10 ? step / 5 : 1;
+  let h = '';
+  for (let t = 0; t <= span + 1e-6; t += minor){ const major = Math.abs(t / step - Math.round(t / step)) < 1e-6; h += `<div class="tick${major ? ' major' : ''}" style="left:${t * pps}px">${major ? `<span>${Math.round(t)}s</span>` : ''}</div>`; }
+  ruler.innerHTML = h;
+}
+lanesEl.addEventListener('click', e => {
+  const d = e.target.closest('.clip'); if (!d) return;
+  const i = +d.dataset.i, c = app.S.crew[i].clips[+d.dataset.k];
+  selectCrew(i); seek(c.t0 + .001); gotoLine(c.line);
+  lanesEl.querySelectorAll('.clip.sel').forEach(x => x.classList.remove('sel')); d.classList.add('sel');
+});
+lanesL.addEventListener('click', e => { const d = e.target.closest('.crewl'); if (d) selectCrew(+d.dataset.i); });
+function markHot(){ lanesEl.querySelectorAll('.clip').forEach(d => d.classList.toggle('hot', +d.dataset.line === app.hotLine)); }
+let scrub = null;
+ruler.addEventListener('pointerdown', e => { scrub = true; ruler.setPointerCapture(e.pointerId); scrubTo(e); });
+ruler.addEventListener('pointermove', e => { if (scrub) scrubTo(e); });
+ruler.addEventListener('pointerup', () => { scrub = null; });
+function scrubTo(e){ const r = tlInner.getBoundingClientRect(); seek(clamp((e.clientX - r.left) / app.pps, 0, app.S.span)); }
+$('bZoomIn').onclick = () => { app.ppsFit = false; app.pps = Math.min(200, app.pps * 1.5); layoutTL(); };
+$('bZoomOut').onclick = () => { app.pps = app.pps / 1.5; const fit = (tlScroll.clientWidth - 16) / app.S.span; if (app.pps <= fit){ app.ppsFit = true; } layoutTL(); };
+function setPlaying(p){ app.playing = p; $('playLbl').textContent = p ? 'Pause' : 'Play'; $('playIcon').innerHTML = p ? '<rect x="2" y="1" width="3" height="10"/><rect x="7" y="1" width="3" height="10"/>' : '<path d="M2 1l9 5-9 5z"/>'; }
+$('bPlay').onclick = () => { if (!app.playing && app.playT >= app.S.span - 1e-6) seek(0); setPlaying(!app.playing); };
+$('bStart').onclick = () => seek(0);
+$('bLoop').onclick = () => { app.loop = !app.loop; $('bLoop').setAttribute('aria-pressed', String(app.loop)); };
+$('speed').onchange = e => { app.speed = +e.target.value; };
+
+// ---------- metrics ----------
+function renderMetrics(){
+  const {M, S} = app, span = S.span;
+  $('mSpan').textContent = span.toFixed(1) + ' s';
+  $('mSpanS').textContent = span >= M.H - .01 ? 'the shift horizon; work continues' : 'until the last figure finishes';
+  const kinds = {}; S.output.filter(o => o.t <= span + 1e-6).forEach(o => kinds[o.kind] = (kinds[o.kind] || 0) + 1);
+  $('mOut').textContent = S.outCount ? String(S.outCount) : '0';
+  $('mOutS').textContent = S.outCount ? Object.entries(kinds).map(([k, n]) => `${k} × ${n}`).join(', ') + ' in bins' : 'no bins filled';
+  $('mTput').textContent = S.outCount ? (S.outCount / span * 60).toFixed(2) : '–';
+  const cands = [];
+  S.crew.forEach(w => cands.push({name: w.name, u: w.busy / span}));
+  Object.values(S.stations).forEach(ss => { if (ss.runs.length) cands.push({name: ss.st.name, u: ss.runs.reduce((a, r) => a + Math.min(r.t1, span) - r.t0, 0) / span}); });
+  cands.sort((a, b) => b.u - a.u);
+  const b = cands[0];
+  $('mNeck').textContent = b ? b.name : '–';
+  $('mNeckS').textContent = b ? `${Math.round(Math.min(1, b.u) * 100)}% busy, the highest in the cell` : '';
+  renderCrewRows(true);
+}
+let lastRows = 0;
+function renderCrewRows(force){
+  const now = performance.now(); if (!force && now - lastRows < 120) return; lastRows = now;
+  const {S} = app, span = S.span, t = app.playT;
+  $('crewRows').innerHTML = S.crew.map((w, i) => {
+    const c = clipAt(w, t), live = c && t < c.t1 ? c : null;
+    const doing = live ? (live.blocked ? 'blocked: ' + live.why : live.label + (live.sub && live.kind !== 'walk' ? ' · ' + live.sub : '')) : (w.fault ? 'fault' : 'done');
+    const u = Math.min(1, w.busy / span);
+    return `<tr data-i="${i}" class="${i === app.sel ? 'sel' : ''}"><td><b>${esc(w.name)}</b></td><td class="doing" title="${esc(doing)}">${esc(doing)}</td><td class="num">${Math.round(u * 100)}%<span class="meter"><i style="width:${u * 100}%"></i></span></td><td class="num">${w.waited.toFixed(1)} s</td></tr>`;
+  }).join('');
+}
+$('crewRows').addEventListener('click', e => { const tr = e.target.closest('tr'); if (tr) selectCrew(+tr.dataset.i); });
+
+// ---------- JS surface ----------
+function emitJS(M, S, root){
+  const q = s => JSON.stringify(s), n = x => String(+(+x).toFixed(3));
+  const dur = d => d.j ? `{ mean: ${n(d.v)}, jitter: ${n(d.j)} }` : n(d.v);
+  const o = [];
+  o.push('// compiled.js · generated from cell.loom by Loom 0.1');
+  o.push('// The same cell as a chainable builder, in seconds, metres and hertz.');
+  o.push('import { Cell } from "loom";', '');
+  o.push(`const cell = new Cell(${q(M.cell)}, { grid: [${M.W}, ${M.D}], seed: ${M.seed}, shift: ${n(M.H)} })`);
+  const w = (root.world || {});
+  (w.platforms || []).forEach(p => { const b = uBay(p.at); o.push(`  .platform(${q(bayName(b[0], b[1]))}, { size: [${(p.size || [1, 1]).join(', ')}], level: ${p.level == null ? 1 : p.level} })`); });
+  M.stairs.forEach(s => o.push(`  .stair(${q(bayName(s.x, s.z))}, { dir: ${q(Object.keys(DIRS).find(k => DIRS[k][0] === s.dir[0] && DIRS[k][1] === s.dir[1]))}, run: ${s.run} })`));
+  if (M.ring) o.push(`  .penrose(${q(bayName(M.ring.ax, M.ring.az))}, { size: ${M.ring.n}, rise: ${M.ring.k} })`);
+  o[o.length - 1] += ';';
+  o.push('', `cell.items({ ${Object.entries(M.items).map(([k, v]) => `${k}: ${q(v)}`).join(', ')} });`, '');
+  for (const st of Object.values(M.stations)){
+    const parts = [`at: ${q(bayName(st.x, st.z))}`, `kind: ${q(st.kind)}`, `face: ${q(Object.keys(DIRS).find(k => k.length > 1 && DIRS[k][0] === st.face[0] && DIRS[k][1] === st.face[1]))}`];
+    if (st.stock.length){ const c = {}; st.stock.forEach(k => c[k] = (c[k] || 0) + 1); parts.push(`stock: { ${Object.entries(c).map(([k, v]) => `${k}: ${v}`).join(', ')} }`); }
+    if (st.cap !== KINDS[st.kind].cap) parts.push(`capacity: ${st.cap}`);
+    if (st.makes) parts.push(`makes: [${q(st.makes.from)}, ${q(st.makes.to)}]`, `cycle: ${dur(st.cycle)}`);
+    o.push(`cell.station(${q(st.name)}, { ${parts.join(', ')} });`);
+  }
+  o.push('');
+  const rigJS = r => `{ height: ${n(r.height)}, gait: { cadence: ${n(r.cadence)}, stride: ${n(r.stride)}, lift: ${n(r.lift)} }, body: { f: ${n(r.body.f)}, zeta: ${n(r.body.z)}, r: ${n(r.body.r)} }, gaze: { f: ${n(r.gaze.f)}, zeta: ${n(r.gaze.z)}, r: ${n(r.gaze.r)} } }`;
+  for (const [k, r] of Object.entries(M.rigs)) o.push(`const ${k.replace(/\W/g, '_')} = cell.rig(${q(k)}, ${rigJS(r)});`);
+  o.push('');
+  const tgt = t => q(t.label);
+  const step = (ins, ind) => {
+    const p = ' '.repeat(ind);
+    switch (ins.op){
+      case 'walk': case 'run': return `${p}.${ins.op}(${tgt(ins.to)})`;
+      case 'pick': return `${p}.pick(${ins.item ? q(ins.item) : 'null'}, { from: ${q(ins.st.name)} })`;
+      case 'place': return `${p}.place(${q(ins.st.name)})`;
+      case 'operate': return `${p}.operate(${q(ins.st.name)}${ins.dur ? `, { for: ${dur(ins.dur)} }` : ''})`;
+      case 'inspect': return `${p}.inspect(${dur(ins.dur)})`;
+      case 'wait': return `${p}.wait(${ins.dur ? dur(ins.dur) : q(ins.signal)})`;
+      case 'signal': return `${p}.signal(${q(ins.signal)}${ins.count > 1 ? `, { count: ${ins.count} }` : ''})`;
+      case 'ascend': case 'descend': return `${p}.${ins.op}("penrose", { laps: ${ins.laps === Infinity ? 'Infinity' : ins.laps}${ins.lane !== 'center' ? `, lane: ${q(ins.lane)}` : ''} })`;
+      case 'repeat': return `${p}.repeat(${ins.n === Infinity ? 'Infinity' : ins.n}, s => s\n${ins.body.map(b => step(b, ind + 2)).join('\n')})`;
+      case 'point': return `${p}.point(${tgt(ins.to)})`;
+      case 'look': return `${p}.look(${tgt(ins.to)}, { for: ${dur(ins.dur)} })`;
+      case 'idle': return `${p}.idle(${dur(ins.dur)})`;
+      default: return `${p}.${ins.op}(${ins.dur && ins.dur.v !== GESTURE_T[ins.op] ? dur(ins.dur) : ''})`;
+    }
+  };
+  const rigDiff = (b, r) => {
+    const d = [];
+    if (r.height !== b.height) d.push(`height: ${n(r.height)}`);
+    const gd = ['cadence', 'stride', 'lift'].filter(k => r[k] !== b[k]).map(k => `${k}: ${n(r[k])}`); if (gd.length) d.push(`gait: { ${gd.join(', ')} }`);
+    for (const sk of ['body', 'gaze', 'hands']){ const sd = [['f', 'f'], ['z', 'zeta'], ['r', 'r']].filter(([k]) => r[sk][k] !== b[sk][k]).map(([k, nm]) => `${nm}: ${n(r[sk][k])}`); if (sd.length) d.push(`${sk}: { ${sd.join(', ')} }`); }
+    return d;
+  };
+  for (const c of M.crew){
+    const rn = c.rigName.replace(/\W/g, '_'), d = rigDiff(M.rigs[c.rigName], c.rig);
+    o.push(`cell.crew(${q(c.name)}, ${d.length ? `${rn}.with({ ${d.join(', ')} })` : rn}, { at: ${q(bayName(Math.floor(c.x), Math.floor(c.z)))} })` + (c.prog.length ? '' : ';'));
+    if (c.prog.length) o.push(c.prog.map(s => step(s, 2)).join('\n') + ';');
+  }
+  const nClips = S.crew.reduce((a, w) => a + w.clips.length, 0);
+  o.push('', 'export default cell.compile();', `// → ${S.crew.length} crew · ${nClips} clips · cycle ${S.span.toFixed(1)} s · ${S.outCount} delivered`);
+  return o.join('\n');
+}
+function hlJS(s){
+  return s.split('\n').map(l => {
+    const ci = l.indexOf('//');
+    const code = ci >= 0 ? l.slice(0, ci) : l, com = ci >= 0 ? l.slice(ci) : '';
+    return esc(code).replace(/(&quot;|")([^"]*)(")/g, '<span class="t-s">"$2"</span>').replace(/\b(import|from|const|new|export|default|Infinity|null)\b/g, '<span class="t-k">$1</span>').replace(/\.(\w+)\(/g, '.<span class="t-v">$1</span>(').replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="t-n">$1</span>') + (com ? `<span class="t-c">${esc(com)}</span>` : '');
+  }).join('\n');
+}
+function setTab(t){
+  app.tab = t;
+  $('tabSrc').setAttribute('aria-selected', String(t === 'src')); $('tabJs').setAttribute('aria-selected', String(t === 'js'));
+  $('jsView').hidden = t !== 'js'; srcEl.hidden = hlEl.hidden = t === 'js';
+  document.querySelector('.gutter').style.visibility = t === 'js' ? 'hidden' : 'visible';
+}
+$('tabSrc').onclick = () => setTab('src'); $('tabJs').onclick = () => setTab('js');
+$('bCopy').onclick = async () => {
+  const text = app.tab === 'js' ? $('jsView').textContent : srcEl.value;
+  try { await navigator.clipboard.writeText(text); $('bCopy').textContent = 'Copied'; }
+  catch (e){ if (app.tab === 'src'){ srcEl.focus(); srcEl.select(); } $('bCopy').textContent = 'Press ⌘C'; }
+  setTimeout(() => $('bCopy').textContent = 'Copy', 1600);
+};
+$('example').onchange = e => { loadExample(e.target.value); };
+function loadExample(k){
+  srcEl.value = EXAMPLES[k]; store.set(LS_SRC, srcEl.value); store.set(LS_EX, k);
+  view.yawT = view.yaw = 0; view.panX = view.panY = 0; view.zoom = 1; app.sel = 0; app.playT = 0; app.hotLine = 0;
+  recompile(); seek(0); setPlaying(true); srcEl.scrollTop = 0; syncScroll();
+}
+
+// ---------- keys ----------
+document.addEventListener('keydown', e => {
+  const tag = (e.target.tagName || '').toLowerCase();
+  if (tag === 'textarea' || tag === 'input' || tag === 'select') return;
+  if (e.key === ' '){ e.preventDefault(); $('bPlay').click(); }
+  else if (e.key === 'Home'){ e.preventDefault(); seek(0); }
+  else if (e.key === 'q' || e.key === 'Q') rotate(-1);
+  else if (e.key === 'e' || e.key === 'E') rotate(1);
+  else if (e.key === 'ArrowRight'){ seek(app.playT + (e.shiftKey ? 1 : 1 / 30)); }
+  else if (e.key === 'ArrowLeft'){ seek(app.playT - (e.shiftKey ? 1 : 1 / 30)); }
+});
+new MutationObserver(readColors).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readColors);
+
+// ---------- loop ----------
+function runLinesAt(t){
+  const map = new Map();
+  app.S.crew.forEach(w => { const c = clipAt(w, t); if (c && t < c.t1){ if (!map.has(c.line)) map.set(c.line, []); map.get(c.line).push(w.name); } });
+  return map;
+}
+let last = performance.now();
+function loop(now){
+  const dt = Math.min(.1, (now - last) / 1000); last = now;
+  if (app.S){
+    if (app.playing){
+      let t = app.playT + dt * app.speed;
+      if (t >= app.S.span){ if (app.loop){ seek(0); t = 0; } else { t = app.S.span; setPlaying(false); } }
+      seek(t);
+    }
+    view.yaw += (view.yawT - view.yaw) * (1 - Math.exp(-dt * 7));
+    if (Math.abs(view.yawT - view.yaw) < 1e-3) view.yaw = view.yawT;
+    draw();
+    playhead.style.left = (app.playT * app.pps) + 'px';
+    if (app.playing){ const x = app.playT * app.pps; if (x > tlScroll.scrollLeft + tlScroll.clientWidth - 30 || x < tlScroll.scrollLeft) tlScroll.scrollLeft = Math.max(0, x - 40); }
+    $('tNow').textContent = app.playT.toFixed(1);
+    const bad = app.R && !app.R.ok;
+    $('hudState').textContent = bad ? `Error on line ${app.R.errors[0].line}` : (app.playing ? 'Playing' : 'Paused') + ` · ${app.playT.toFixed(1)} s`;
+    const rl = runLinesAt(app.playT); const key = [...rl.entries()].map(([l, n]) => l + ':' + n.join(',')).join('|');
+    if (key !== app.runKey){ app.runKey = key; app.runLines = rl; renderEditor(); }
+    renderCrewRows(false);
+  }
+  requestAnimationFrame(loop);
+}
+
+// ---------- boot ----------
+readColors();
+{
+  const ex = store.get(LS_EX); const saved = store.get(LS_SRC);
+  if (ex && EXAMPLES[ex]) $('example').value = ex;
+  srcEl.value = saved || EXAMPLES[$('example').value];
+}
+fitCanvas();
+if (CW < 560){ view.zoom = 1.3; view.panY = 30; }
+recompile();
+if (!app.S){ srcEl.value = EXAMPLES.gear; recompile(); }
+selectCrew(app.sel || 0);
+setPlaying(true);
+requestAnimationFrame(loop);
+
+// ================= field-note figures =================
+function figCanvas(id, draw){
+  const c = $(id), x = c.getContext('2d'); const st = {c, x, W: 0, H: 0, vis: false, t0: performance.now(), draw};
+  const fit = () => { const r = c.getBoundingClientRect(); if (!r.width) return; const d = Math.min(2, devicePixelRatio || 1); st.W = r.width; st.H = r.height; c.width = Math.round(r.width * d); c.height = Math.round(r.height * d); x.setTransform(d, 0, 0, d, 0, 0); st.draw(st, 0); };
+  new ResizeObserver(fit).observe(c);
+  new IntersectionObserver(es => { st.vis = es[0].isIntersecting; }).observe(c);
+  FIGS.push(st); return st;
+}
+const FIGS = [];
+function figLoop(now){ for (const f of FIGS) if (f.vis && f.W) f.draw(f, (now - f.t0) / 1000); requestAnimationFrame(figLoop); }
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function paper(x, W, H){
+  x.fillStyle = C.stage; x.fillRect(0, 0, W, H);
+  x.strokeStyle = C['stage-grid']; x.lineWidth = 1; x.beginPath();
+  for (let i = 0; i < W; i += 12){ x.moveTo(i + .5, 0); x.lineTo(i + .5, H); } for (let j = 0; j < H; j += 12){ x.moveTo(0, j + .5); x.lineTo(W, j + .5); } x.stroke();
+}
+function label(x, s, px, py, o = {}){ x.font = `${o.w || 400} ${o.size || 10}px Arial, Helvetica, sans-serif`; x.fillStyle = o.col || C.ink; x.textAlign = o.align || 'left'; x.fillText(s, px, py); }
+function cap2(x, pts, w, fill){ x.lineCap = 'round'; x.lineJoin = 'round'; const path = () => { x.beginPath(); pts.forEach((p, i) => i ? x.lineTo(p.x, p.y) : x.moveTo(p.x, p.y)); }; path(); x.strokeStyle = C.ink; x.lineWidth = w + 2.2; x.stroke(); path(); x.strokeStyle = fill || C.stage; x.lineWidth = w; x.stroke(); }
+
+// ---- Fig A: springs ----
+const sp = {f: 2.2, z: .6, r: .5};
+function bindSlider(id, fmt, fn){ const el = $(id), out = $(id + 'o'); const up = () => { out.textContent = fmt(+el.value); fn(+el.value); }; el.addEventListener('input', up); up(); }
+figCanvas('figSpring', (st, T) => {
+  const {x, W, H} = st; paper(x, W, H);
+  const pw = W * .68, pad = 34, top = 22, bot = H - 26;
+  const tgt = t => t < .25 ? 0 : t < 1.7 ? 1 : .35;
+  const K = sodK(sp), s = {}; const h = 1 / 240, N = Math.round(3 / h);
+  const ys = [], xs = [];
+  for (let i = 0; i <= N; i++){ const t = i * h, v = tgt(t); xs.push(v); ys.push(sod1(s, v, h, K)); }
+  let mn = -.4, mx = 1.5; for (const y of ys){ mn = Math.min(mn, y); mx = Math.max(mx, y); }
+  mn = Math.max(mn, -2.5); mx = Math.min(mx, 3);
+  const X = t => pad + t / 3 * (pw - pad - 8), Y = v => bot - (v - mn) / (mx - mn) * (bot - top);
+  x.strokeStyle = C.line; x.lineWidth = 1; x.beginPath();
+  for (let t = 0; t <= 3; t += .5){ x.moveTo(X(t), top); x.lineTo(X(t), bot); }
+  for (const v of [0, 1]){ x.moveTo(pad, Y(v)); x.lineTo(pw - 8, Y(v)); } x.stroke();
+  label(x, '0', pad - 6, Y(0) + 3, {align: 'right', col: C.muted}); label(x, '1', pad - 6, Y(1) + 3, {align: 'right', col: C.muted});
+  for (let t = 0; t <= 3; t += 1) label(x, t + ' s', X(t), bot + 14, {align: 'center', col: C.muted});
+  x.setLineDash([4, 3]); x.strokeStyle = C.muted; x.lineWidth = 1.2; x.beginPath(); xs.forEach((v, i) => { const px = X(i * h), py = Y(v); i ? x.lineTo(px, py) : x.moveTo(px, py); }); x.stroke(); x.setLineDash([]);
+  x.strokeStyle = C.ink; x.lineWidth = 2; x.beginPath(); ys.forEach((v, i) => { const px = X(i * h), py = Y(clamp(v, mn, mx)); i ? x.lineTo(px, py) : x.moveTo(px, py); }); x.stroke();
+  label(x, 'TARGET x', X(1.75), Y(1) - 6, {w: 700, size: 9, col: C.muted}); label(x, 'RESPONSE y', X(.3), top + 10, {w: 700, size: 9});
+  // live demo
+  const cx = pw + (W - pw) / 2;
+  x.strokeStyle = C.ink; x.lineWidth = 1; x.beginPath(); x.moveTo(pw + 6, top); x.lineTo(pw + 6, bot); x.stroke();
+  const per = 2.4, ph = (T % per) / per, tv = ph < .5 ? 1 : 0;
+  st.live = st.live || {}; const dt = Math.min(.05, T - (st.lt || T)); st.lt = T;
+  let y = st.live.y === undefined ? tv : st.live.y;
+  for (let k = 0, n = Math.max(1, Math.round(dt / h)); k < n; k++) y = sod1(st.live, tv, h, K);
+  const Yd = v => bot - 12 - (v + .3) / 1.6 * (bot - top - 30);
+  x.strokeStyle = C.muted; x.setLineDash([2, 3]); x.beginPath(); x.moveTo(cx - 34, Yd(tv)); x.lineTo(cx + 34, Yd(tv)); x.stroke(); x.setLineDash([]);
+  x.strokeStyle = C.ink; x.strokeRect(cx - 30, Yd(tv) - 5, 10, 10);
+  x.beginPath(); x.moveTo(cx, Yd(tv)); x.lineTo(cx, Yd(clamp(y, -1, 2))); x.stroke();
+  pdot(x, {x: cx, y: Yd(clamp(y, -1, 2))}, 9, C.stage, C.ink); pdot(x, {x: cx, y: Yd(clamp(y, -1, 2))}, 2.5, C.ink);
+  label(x, 'LIVE', cx, top + 10, {align: 'center', w: 700, size: 9, col: C.muted});
+});
+bindSlider('sF', v => v.toFixed(1) + ' Hz', v => sp.f = v);
+bindSlider('sZ', v => v.toFixed(2), v => sp.z = v);
+bindSlider('sR', v => v.toFixed(1), v => sp.r = v);
+
+// ---- Fig B: two-bone IK ----
+const ikS = {drag: false, tx: null, ty: null, auto: true};
+const figIK = figCanvas('figIK', (st, T) => {
+  const {x, W, H} = st; paper(x, W, H);
+  const S = {x: W * .3, y: H * .45}, a = H * .36, b = H * .31;
+  if (ikS.auto && !reduceMotion){ ikS.tx = S.x + Math.cos(T * .6) * a * .95 + a * .35; ikS.ty = S.y + Math.sin(T * .9) * a * .6; }
+  if (ikS.tx == null){ ikS.tx = S.x + a * 1.1; ikS.ty = S.y + a * .3; }
+  const Tg = {x: ikS.tx, y: ikS.ty};
+  // reach circles
+  x.setLineDash([3, 4]); x.strokeStyle = C.muted; x.lineWidth = 1;
+  x.beginPath(); x.arc(S.x, S.y, a + b, 0, Math.PI * 2); x.stroke(); x.beginPath(); x.arc(S.x, S.y, Math.abs(a - b), 0, Math.PI * 2); x.stroke(); x.setLineDash([]);
+  const r = ik2(V(S.x, S.y, 0), V(Tg.x, Tg.y, 0), a, b, V(S.x + a * .4, S.y + a * 1.2, 0));
+  const E = {x: r.mid.x, y: r.mid.y}, Hn = {x: r.end.x, y: r.end.y};
+  // triangle
+  x.strokeStyle = C.muted; x.setLineDash([2, 3]); x.beginPath(); x.moveTo(S.x, S.y); x.lineTo(Tg.x, Tg.y); x.stroke(); x.setLineDash([]);
+  // pole
+  const Pp = {x: S.x + a * .4, y: S.y + a * 1.2};
+  x.setLineDash([1, 3]); x.beginPath(); x.moveTo(E.x, E.y); x.lineTo(Pp.x, Pp.y); x.stroke(); x.setLineDash([]); pdot(x, Pp, 3, C.stage, C.ink); label(x, 'POLE', Pp.x + 7, Pp.y + 3, {w: 700, size: 9, col: C.muted});
+  cap2(x, [S, E, Hn], 11);
+  pdot(x, S, 5, C.ink); pdot(x, E, 3.5, C.ink); pdot(x, Hn, 6, C.stage, C.ink);
+  // angle arc at shoulder
+  const angT = Math.atan2(Tg.y - S.y, Tg.x - S.x), angE = Math.atan2(E.y - S.y, E.x - S.x);
+  x.strokeStyle = C.warn; x.lineWidth = 1.5; x.beginPath(); x.arc(S.x, S.y, 26, Math.min(angT, angE), Math.max(angT, angE)); x.stroke();
+  const d = Math.hypot(Tg.x - S.x, Tg.y - S.y), ca = clamp((a * a + d * d - b * b) / (2 * a * d), -1, 1);
+  const reach = d <= a + b;
+  label(x, 'α', S.x + Math.cos((angT + angE) / 2) * 36 - 3, S.y + Math.sin((angT + angE) / 2) * 36 + 4, {w: 700, size: 12, col: C.warn});
+  cross2(x, Tg, 7, reach ? C.ink : C.warn, 1.5); x.beginPath(); x.arc(Tg.x, Tg.y, 10, 0, Math.PI * 2); x.strokeStyle = reach ? C.ink : C.warn; x.stroke();
+  label(x, 'S', S.x - 14, S.y - 8, {w: 700}); label(x, 'T', Tg.x + 13, Tg.y - 10, {w: 700});
+  const bx = W - 170;
+  label(x, `a = ${(a / a).toFixed(2)}   b = ${(b / a).toFixed(2)}`, bx, 22, {col: C.muted});
+  label(x, `d = ${(d / a).toFixed(2)}${reach ? '' : '  (out of reach)'}`, bx, 38, {col: reach ? C.ink : C.warn});
+  label(x, `α = ${(Math.acos(ca) * 180 / Math.PI).toFixed(1)}°`, bx, 54);
+  label(x, ikS.auto ? 'DRAG THE TARGET' : 'DOUBLE-CLICK TO RELEASE', bx, H - 14, {w: 700, size: 9, col: C.muted});
+});
+{
+  const c = $('figIK');
+  const pos = e => { const r = c.getBoundingClientRect(); return {x: e.clientX - r.left, y: e.clientY - r.top}; };
+  c.addEventListener('pointerdown', e => { ikS.drag = true; ikS.auto = false; const p = pos(e); ikS.tx = p.x; ikS.ty = p.y; c.setPointerCapture(e.pointerId); });
+  c.addEventListener('pointermove', e => { if (!ikS.drag) return; const p = pos(e); ikS.tx = p.x; ikS.ty = p.y; });
+  c.addEventListener('pointerup', () => ikS.drag = false);
+  c.addEventListener('dblclick', () => ikS.auto = true);
+  c.style.cursor = 'crosshair'; void figIK;
+}
+
+// ---- Fig C: gait ----
+const gp = {c: 1.9, s: .72, d: .8};
+figCanvas('figGait', (st, T) => {
+  const {x, W, H} = st; paper(x, W, H);
+  const t = reduceMotion ? 1.3 : T;
+  const cad = gp.c, stride = gp.s, v = cad * stride, Ts = 1 / cad, Tsw = gp.d * Ts, Tst = 2 * Ts - Tsw;
+  const Lg = .87, stand = Lg * .975 + .07, ank = .07;
+  const U = Math.min(H * .34, W / 5.2);
+  const hipX = tt => v * tt;
+  const land = k => hipX(k * Ts + Tsw + Tst / 2);
+  const footAt = (side, tt) => {
+    let k = Math.floor(tt / Ts); if (((k % 2) + 2) % 2 !== side) k--;
+    const lift = k * Ts;
+    const prevX = land(k - 2);
+    if (tt < lift + Tsw){ const u = (tt - lift) / Tsw; return {x: lerp(prevX, land(k), sstep(u)), y: Math.sin(Math.PI * u) * .1, planted: false, k}; }
+    return {x: land(k), y: 0, planted: true, k};
+  };
+  const hipH = tt => { let hh = stand; for (const s of [0, 1]){ const f = footAt(s, tt); if (f.planted){ const dx = f.x - hipX(tt); hh = Math.min(hh, ank + Math.sqrt(Math.max(0, Lg * Lg - dx * dx))); } } return hh; };
+  const gy = H * .62, cx = W * .42;
+  const X = wx => cx + (wx - hipX(t)) * U, Y = wy => gy - wy * U;
+  // ground and footprints
+  x.strokeStyle = C.ink; x.lineWidth = 1.4; x.beginPath(); x.moveTo(0, gy); x.lineTo(W, gy); x.stroke();
+  x.strokeStyle = C.muted; x.lineWidth = 1; x.beginPath();
+  for (let m = Math.floor(hipX(t) - 4); m < hipX(t) + 4; m += .25){ const px = X(m); x.moveTo(px, gy); x.lineTo(px, gy + (Math.abs(m - Math.round(m)) < .01 ? 7 : 3)); } x.stroke();
+  for (let k = Math.floor(t / Ts) - 4; k < Math.floor(t / Ts) + 4; k++){
+    const lx = X(land(k)); if (lx < -10 || lx > W + 10) continue;
+    const future = k * Ts > t - Tsw && k * Ts + Tsw > t;
+    x.strokeStyle = future ? C.warn : C.muted; x.lineWidth = future ? 1.6 : 1;
+    x.beginPath(); x.moveTo(lx - 5, gy + 12); x.lineTo(lx + 5, gy + 12); x.moveTo(lx, gy + 7); x.lineTo(lx, gy + 17); x.stroke();
+  }
+  // hip trace
+  x.strokeStyle = C.muted; x.lineWidth = 1; x.setLineDash([2, 3]); x.beginPath();
+  for (let tt = t - 1.6; tt <= t; tt += 1 / 60){ const px = X(hipX(tt)), py = Y(hipH(tt)); tt === t - 1.6 ? x.moveTo(px, py) : x.lineTo(px, py); } x.stroke(); x.setLineDash([]);
+  // figure
+  const hip = {x: X(hipX(t)), y: Y(hipH(t))};
+  const sh = {x: hip.x + .03 * U, y: hip.y - .5 * U}, head = {x: sh.x + .02 * U, y: sh.y - .2 * U};
+  const legs = [0, 1].map(s => { const f = footAt(s, t); const A = {x: X(f.x), y: Y(f.y + ank)}; const r = ik2(V(hip.x, hip.y, 0), V(A.x, A.y, 0), .44 * U, .43 * U, V(hip.x + U, hip.y + .2 * U, 0)); return {f, knee: r.mid, ankle: r.end, toe: {x: A.x + .16 * U, y: Y(f.y)}}; });
+  const arms = [0, 1].map(s => { const f = footAt(s, t); const sw = -(f.x - hipX(t)) * .45; const hand = {x: sh.x + sw * U, y: sh.y + .52 * U}; const r = ik2(V(sh.x, sh.y, 0), V(hand.x, hand.y, 0), .29 * U, .27 * U, V(sh.x - U, sh.y + .2 * U, 0)); return {el: r.mid, hand: r.end}; });
+  const lw = .1 * U;
+  [0, 1].forEach(s => { if (s === 0){ const L = legs[s], A2 = arms[1 - s]; cap2(x, [hip, L.knee, L.ankle], lw, C.far); cap2(x, [L.ankle, L.toe], lw * .6, C.far); cap2(x, [sh, A2.el, A2.hand], lw * .7, C.far); } });
+  cap2(x, [hip, sh], lw * 1.8);
+  cap2(x, [sh, head], lw * .5);
+  { const L = legs[1], A2 = arms[0]; cap2(x, [hip, L.knee, L.ankle], lw); cap2(x, [L.ankle, L.toe], lw * .6); cap2(x, [sh, A2.el, A2.hand], lw * .7); }
+  pdot(x, head, .105 * U, C.stage, C.ink);
+  // L = sqrt construction for the stance leg
+  const stance = legs.find(l => l.f.planted);
+  if (stance){ x.strokeStyle = C.warn; x.lineWidth = 1.2; x.setLineDash([3, 3]); x.beginPath(); x.moveTo(hip.x, hip.y); x.lineTo(stance.ankle.x, stance.ankle.y); x.stroke(); x.setLineDash([]); label(x, 'L', (hip.x + stance.ankle.x) / 2 + 6, (hip.y + stance.ankle.y) / 2, {w: 700, col: C.warn}); }
+  label(x, 'PLANNED LANDING', X(land(Math.floor(t / Ts) + 1)) + 8, gy + 24, {w: 700, size: 9, col: C.warn});
+  // gait diagram
+  const top = gy + 34, rowH = 10, win = 2.4, X2 = tt => 60 + (tt - (t - win * .7)) / win * (W - 76);
+  label(x, 'LEFT', 12, top + 8, {w: 700, size: 9, col: C.muted}); label(x, 'RIGHT', 12, top + rowH + 12, {w: 700, size: 9, col: C.muted});
+  for (const s of [0, 1]){
+    const y0 = top + s * (rowH + 4);
+    x.strokeStyle = C.ink; x.lineWidth = 1; x.strokeRect(60, y0, W - 76, rowH);
+    for (let k = Math.floor((t - win) / Ts) - 2; k < (t + win) / Ts + 2; k++){
+      if (((k % 2) + 2) % 2 !== s) continue;
+      const a = k * Ts + Tsw, b = (k + 2) * Ts;
+      const xa = clamp(X2(a), 60, W - 16), xb = clamp(X2(b), 60, W - 16); if (xb > xa){ x.fillStyle = C.ink; x.fillRect(xa, y0, xb - xa, rowH); }
+    }
+  }
+  x.strokeStyle = C.warn; x.lineWidth = 1.5; x.beginPath(); x.moveTo(X2(t), top - 4); x.lineTo(X2(t), top + 2 * rowH + 8); x.stroke();
+  label(x, `speed ${v.toFixed(2)} m/s · swing ${(Tsw * 1000).toFixed(0)} ms · double support ${Math.max(0, (Tst - Tsw) / 2 * 1000).toFixed(0)} ms`, 12, 18, {col: C.muted});
+});
+bindSlider('gC', v => v.toFixed(2) + ' steps/s', v => gp.c = v);
+bindSlider('gS', v => v.toFixed(2) + ' m', v => gp.s = v);
+bindSlider('gD', v => Math.round(v * 100) + '%', v => gp.d = v);
+
+// ---- Fig D: null vector ----
+figCanvas('figIso', (st, T) => {
+  const {x, W, H} = st; paper(x, W, H);
+  const s = reduceMotion ? .9 : (1 - Math.cos(T * .9)) * .9;
+  const half = W * .56, U = Math.min(H / 6.2, half / 6);
+  const ox = half * .52, oy = H * .38;
+  const Pi = (px, py, pz) => ({x: ox + (px - pz) * C30 * U, y: oy + ((px + pz) * .5 - py) * U});
+  // floor grid
+  x.strokeStyle = C['floor-grid']; x.lineWidth = 1; x.beginPath();
+  for (let i = -1; i <= 4; i++){ let a = Pi(i, 0, -1), b = Pi(i, 0, 4); x.moveTo(a.x, a.y); x.lineTo(b.x, b.y); a = Pi(-1, 0, i); b = Pi(4, 0, i); x.moveTo(a.x, a.y); x.lineTo(b.x, b.y); } x.stroke();
+  const cube = (px, py, pz, alpha, dashed) => {
+    const q = (a, b, c) => Pi(px + a, py + b, pz + c);
+    x.globalAlpha = alpha; if (dashed) x.setLineDash([3, 3]);
+    poly(x, [q(1, 0, 0), q(1, 0, 1), q(1, 1, 1), q(1, 1, 0)], dashed ? null : C['side-b'], C.ink, 1.2);
+    poly(x, [q(0, 0, 1), q(1, 0, 1), q(1, 1, 1), q(0, 1, 1)], dashed ? null : C['side-a'], C.ink, 1.2);
+    poly(x, [q(0, 1, 0), q(1, 1, 0), q(1, 1, 1), q(0, 1, 1)], dashed ? null : C.stage, C.ink, 1.2);
+    x.globalAlpha = 1; x.setLineDash([]);
+  };
+  // shadow slides, cube does not
+  const sh = [Pi(s, 0, s), Pi(1 + s, 0, s), Pi(1 + s, 0, 1 + s), Pi(s, 0, 1 + s)];
+  poly(x, sh, null, C.muted, 1); x.save(); x.beginPath(); sh.forEach((p, i) => i ? x.lineTo(p.x, p.y) : x.moveTo(p.x, p.y)); x.closePath(); x.clip(); x.fillStyle = PAT.shadow || C.line; x.fillRect(0, 0, W, H); x.restore();
+  const a0 = Pi(s + .5, 0, s + .5), a1 = Pi(s + .5, s, s + .5); x.setLineDash([2, 3]); x.strokeStyle = C.muted; x.beginPath(); x.moveTo(a0.x, a0.y); x.lineTo(a1.x, a1.y); x.stroke(); x.setLineDash([]);
+  cube(s, s, s, 1, false);
+  label(x, 'AXONOMETRIC', 14, 20, {w: 700, size: 9, col: C.muted});
+  label(x, `cube at s·(1,1,1), s = ${s.toFixed(2)}`, 14, H - 30, {col: C.ink});
+  label(x, 'screen position: unchanged · shadow: moves', 14, H - 14, {col: C.muted});
+  // elevation
+  x.strokeStyle = C.ink; x.lineWidth = 1; x.beginPath(); x.moveTo(half, 10); x.lineTo(half, H - 10); x.stroke();
+  const eU = Math.min(H / 4.4, (W - half) / 4.4), ex = half + 26, ey = H - 34;
+  const E = (d, y) => ({x: ex + d * eU / Math.SQRT2, y: ey - y * eU});
+  x.strokeStyle = C.ink; x.lineWidth = 1.4; x.beginPath(); x.moveTo(ex - 10, ey); x.lineTo(W - 12, ey); x.stroke();
+  label(x, 'ELEVATION ALONG x = z', half + 12, 20, {w: 700, size: 9, col: C.muted});
+  const box2 = (d, y, al) => { const q = [E(d, y), E(d + 2, y), E(d + 2, y + 1), E(d, y + 1)]; x.globalAlpha = al; poly(x, q, C.stage, C.ink, 1.2); x.globalAlpha = 1; };
+  box2(0, 0, .35); box2(2 * s, s, 1);
+  // view ray
+  const r0 = E(0, 0), r1 = E(2 * 2.2, 2.2);
+  x.strokeStyle = C.warn; x.lineWidth = 1.2; x.setLineDash([4, 3]); x.beginPath(); x.moveTo(r0.x, r0.y); x.lineTo(r1.x, r1.y); x.stroke(); x.setLineDash([]);
+  label(x, 'view ray = (1, 1, 1)', r1.x - 4, r1.y - 6, {align: 'right', col: C.warn, w: 700, size: 9});
+});
+
+requestAnimationFrame(figLoop);
+
+})();
+</script>
+
+</body></html>
